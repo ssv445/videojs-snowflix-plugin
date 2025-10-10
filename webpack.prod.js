@@ -15,7 +15,7 @@ const umdConfig = merge(common, {
       export: 'default',
     },
     globalObject: 'this',
-    clean: true,
+    clean: false, // Don't clean - ESM config will clean first
   },
   externals: {
     'video.js': {
@@ -51,7 +51,7 @@ const esmConfig = merge(common, {
     library: {
       type: 'module',
     },
-    clean: false, // Don't clean, we're building multiple files
+    clean: true, // Clean dist folder before building
   },
   externals: {
     'video.js': 'video.js',
@@ -70,4 +70,5 @@ const esmConfig = merge(common, {
   },
 });
 
-module.exports = [umdConfig, esmConfig];
+// Build ESM first, then UMD (so UMD clean doesn't remove ESM)
+module.exports = [esmConfig, umdConfig];
