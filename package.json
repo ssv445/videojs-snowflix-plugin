@@ -3,8 +3,17 @@
   "version": "1.0.0",
   "description": "Accessibility video plugin for Video.js with visual effect filters for disabled users",
   "main": "dist/videojs-snowflix.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ssv445/videojs-snowflix-plugin.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ssv445/videojs-snowflix-plugin/issues"
+  },
+  "homepage": "https://github.com/ssv445/videojs-snowflix-plugin#readme",
   "scripts": {
     "build": "webpack --config webpack.prod.js",
+    "prepublishOnly": "npm run build",
     "dev": "webpack serve --config webpack.dev.js",
     "demo": "npm run dev"
   },
