@@ -1,6 +1,6 @@
 {
   "name": "videojs-snowflix",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Accessibility video plugin for Video.js with visual effect filters for disabled users",
   "main": "dist/videojs-snowflix.js",
   "repository": {
@@ -31,7 +31,7 @@
     "Snowflix Team (Original Kaltura Plugin)",
     "kandabi <kandabiaviv@gmail.com>"
   ],
-  "license": "MIT",
+  "license": "SEE LICENSE IN LICENSE",
   "files": [
     "dist",
     "LICENSE"

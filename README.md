@@ -112,14 +112,12 @@ Output files:
 
 ## License
 
-MIT License
-
 This project is a port of the Snowflix Kaltura plugin to Video.js.
 
-- **Original work:** Snowflix team (https://www.snowflixtv.com/)
+- **Original work:** Copyright © Snowflix team (https://www.snowflixtv.com/)
 - **Video.js port:** Shyam Verma
 
-See [LICENSE](LICENSE) file for full details.
+See [LICENSE](LICENSE) file for details.
 
 ## Credits
 
