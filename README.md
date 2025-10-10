@@ -4,66 +4,90 @@ Accessibility plugin for Video.js providing visual effect filters for enhanced v
 
 ## Installation
 
-### From npm (Recommended)
-
 ```bash
 npm install videojs-snowflix
 ```
 
-### From GitHub
-
-```bash
-npm install git+https://github.com/ssv445/videojs-snowflix-plugin.git
-```
-
-### From Local Package
-
-```bash
-# Option 1: Install from local path
-npm install /path/to/videojs-snowflix
-
-# Option 2: Use npm link for development
-cd /path/to/videojs-snowflix
-npm link
-cd /path/to/your-project
-npm link videojs-snowflix
-```
-
-### Manual Installation
-
-Build and copy distribution files:
-
-```bash
-cd videojs-snowflix
-npm run build
-cp -r dist/* /your-project/public/js/
-```
-
-Then include:
-
-```html
-<link href="https://vjs.zencdn.net/8.10.0/video-js.css" rel="stylesheet">
-<script src="https://vjs.zencdn.net/8.10.0/video.min.js"></script>
-<script src="/js/videojs-snowflix.min.js"></script>
-```
-
 ## Usage
 
-```html
-<video id="my-player" class="video-js" controls crossorigin="anonymous">
-  <source src="video.mp4" type="video/mp4">
-</video>
+### In HTML
 
-<script>
-  const player = videojs('my-player');
-  player.snowflix({
-    float: 'top-right',  // UI position: top-right, top-left, bottom-right, bottom-left
-    lang: 'en',          // Language: en (English)
-    targetId: null,      // Optional: custom container element ID
-    isMuted: false       // Initial audio mute state
-  });
-</script>
+```html
+<!DOCTYPE html>
+<html>
+<head>
+  <!-- Video.js CSS -->
+  <link href="https://vjs.zencdn.net/8.10.0/video-js.css" rel="stylesheet">
+</head>
+<body>
+  <video id="my-player" class="video-js" controls crossorigin="anonymous">
+    <source src="video.mp4" type="video/mp4">
+  </video>
+
+  <!-- Video.js -->
+  <script src="https://vjs.zencdn.net/8.10.0/video.min.js"></script>
+
+  <!-- Snowflix Plugin -->
+  <script src="node_modules/videojs-snowflix/dist/videojs-snowflix.min.js"></script>
+
+  <script>
+    const player = videojs('my-player');
+    player.snowflix({
+      float: 'top-right',  // Optional: UI position
+      lang: 'en'           // Optional: language
+    });
+  </script>
+</body>
+</html>
 ```
+
+### With a Bundler (Webpack, Vite, etc.)
+
+```javascript
+import videojs from 'video.js';
+import 'video.js/dist/video-js.css';
+import 'videojs-snowflix';
+
+const player = videojs('my-player');
+player.snowflix({
+  float: 'top-right',
+  lang: 'en'
+});
+```
+
+### In React/Vue/Angular
+
+```javascript
+import { useEffect, useRef } from 'react';
+import videojs from 'video.js';
+import 'video.js/dist/video-js.css';
+import 'videojs-snowflix';
+
+function VideoPlayer() {
+  const videoRef = useRef(null);
+
+  useEffect(() => {
+    const player = videojs(videoRef.current, {
+      controls: true,
+      fluid: true
+    });
+
+    player.snowflix({
+      float: 'top-right',
+      lang: 'en'
+    });
+
+    return () => {
+      player.dispose();
+    };
+  }, []);
+
+  return (
+    <video ref={videoRef} className="video-js" crossOrigin="anonymous">
+      <source src="video.mp4" type="video/mp4" />
+    </video>
+  );
+}
 
 ## Configuration Options
 
@@ -82,9 +106,15 @@ Then include:
 - **Persistent Settings**: Saves preferences to localStorage
 - **Responsive**: Auto-adjusts to player size
 
-## Building from Source
+## Development
+
+### Building from Source
 
 ```bash
+# Clone the repository
+git clone https://github.com/ssv445/videojs-snowflix-plugin.git
+cd videojs-snowflix-plugin
+
 # Install dependencies
 npm install
 
@@ -95,12 +125,9 @@ npm run dev
 npm run build
 ```
 
-Output files:
-- Development: `dist/videojs-snowflix.js`
-- Production: `dist/videojs-snowflix.min.js`
-- Assets: Images, 3D models (.glb), audio files are bundled into `dist/`
-
-**Note**: All assets (SVGs, 3D models, audio, fonts) are bundled by webpack. When installing via npm or npm link, all assets are included automatically.
+Output files are generated in the `dist/` folder:
+- `dist/videojs-snowflix.min.js` - Minified plugin bundle
+- All assets (images, 3D models, audio, fonts) are automatically included
 
 ## Requirements
 
