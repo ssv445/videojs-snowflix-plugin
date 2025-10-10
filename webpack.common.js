@@ -23,20 +23,20 @@ module.exports = {
         test: /\.(woff|woff2)$/i,
         type: 'asset/inline',
       },
-      //*** Images
+      //*** Images - inline as base64 for npm distribution
       {
         test: /\.(png|svg|jpg|jpeg|gif)$/i,
-        type: 'asset/resource',
+        type: 'asset/inline',
       },
-      //*** Audio
+      //*** Audio - inline as base64 for npm distribution
       {
         test: /\.(mp3|wav)$/i,
-        type: 'asset/resource',
+        type: 'asset/inline',
       },
-      //*** 3D Models
+      //*** 3D Models - inline as base64 for npm distribution
       {
         test: /\.(glb|gltf)$/i,
-        type: 'asset/resource',
+        type: 'asset/inline',
       },
       //*** Css
       {

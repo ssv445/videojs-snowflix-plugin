@@ -132,8 +132,9 @@ npm run build
 ```
 
 Output files are generated in the `dist/` folder:
-- `dist/videojs-snowflix.min.js` - Minified plugin bundle
-- All assets (images, 3D models, audio, fonts) are automatically included
+- `dist/videojs-snowflix.min.js` (~1.6MB) - UMD bundle with all assets embedded
+- `dist/videojs-snowflix.esm.js` (~1.6MB) - ESM bundle with all assets embedded
+- All assets (images, 3D models, audio, fonts) are inlined as base64
 
 ## Requirements
 
