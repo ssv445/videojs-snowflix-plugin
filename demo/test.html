@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Snowflix Plugin Test Suite</title>
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #1a1a1a;
+      color: #fff;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      height: 100vh;
+      gap: 0;
+    }
+
+    /* Left Panel - Test Controls */
+    .test-panel {
+      background: #1a1a1a;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      border-right: 2px solid #00c8ff;
+    }
+
+    .header {
+      background: #2a2a2a;
+      padding: 20px;
+      border-bottom: 2px solid #00c8ff;
+    }
+
+    h1 {
+      color: #00c8ff;
+      font-size: 1.8em;
+      margin-bottom: 15px;
+    }
+
+    .controls {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+
+    button {
+      background: linear-gradient(135deg, #00c9ea 0%, #1287a8 100%);
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    button:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 201, 234, 0.4);
+    }
+
+    button:disabled {
+      background: #555;
+      cursor: not-allowed;
+      opacity: 0.5;
+    }
+
+    .stats {
+      display: flex;
+      gap: 20px;
+      font-size: 14px;
+    }
+
+    .stat {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .stat-label {
+      color: #888;
+    }
+
+    .stat-value {
+      font-weight: bold;
+      font-size: 18px;
+    }
+
+    .stat-value.passed { color: #4caf50; }
+    .stat-value.failed { color: #f44336; }
+    .stat-value.pending { color: #ff9800; }
+
+    .test-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 10px;
+    }
+
+    .test-item {
+      background: #2a2a2a;
+      border-left: 4px solid #555;
+      border-radius: 5px;
+      padding: 15px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .test-item:hover {
+      background: #333;
+    }
+
+    .test-item.pending { border-left-color: #ff9800; }
+    .test-item.running { border-left-color: #2196f3; background: #2d3a4a; }
+    .test-item.passed { border-left-color: #4caf50; }
+    .test-item.failed { border-left-color: #f44336; }
+
+    .test-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 8px;
+    }
+
+    .test-status {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #555;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      flex-shrink: 0;
+    }
+
+    .test-item.pending .test-status { background: #ff9800; }
+    .test-item.running .test-status {
+      background: #2196f3;
+      animation: pulse 1s infinite;
+    }
+    .test-item.passed .test-status { background: #4caf50; }
+    .test-item.passed .test-status::after { content: '✓'; color: white; }
+    .test-item.failed .test-status { background: #f44336; }
+    .test-item.failed .test-status::after { content: '✗'; color: white; }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.15); opacity: 0.8; }
+    }
+
+    .test-name {
+      font-weight: 600;
+      font-size: 14px;
+      flex: 1;
+    }
+
+    .test-duration {
+      font-size: 11px;
+      color: #888;
+    }
+
+    .test-description {
+      color: #aaa;
+      font-size: 12px;
+      margin-left: 28px;
+    }
+
+    .test-error {
+      background: #3a1f1f;
+      border: 1px solid #f44336;
+      border-radius: 4px;
+      padding: 8px;
+      margin: 8px 0 0 28px;
+      font-family: 'Courier New', monospace;
+      font-size: 11px;
+      color: #ff8a80;
+    }
+
+    /* Right Panel - Player Preview */
+    .player-panel {
+      background: #000;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .player-header {
+      background: #2a2a2a;
+      padding: 15px 20px;
+      border-bottom: 2px solid #00c8ff;
+    }
+
+    .player-header h2 {
+      color: #00c8ff;
+      font-size: 1.2em;
+      margin-bottom: 5px;
+    }
+
+    .current-test {
+      color: #888;
+      font-size: 13px;
+    }
+
+    .iframe-container {
+      flex: 1;
+      position: relative;
+      background: #000;
+    }
+
+    .test-iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    .loading-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.9);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      color: #00c8ff;
+    }
+
+    .loading-overlay.hidden {
+      display: none;
+    }
+
+    .spinner {
+      border: 3px solid #333;
+      border-top: 3px solid #00c8ff;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin-right: 15px;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+
+    .progress-container {
+      background: #2a2a2a;
+      padding: 10px 20px;
+      border-top: 1px solid #333;
+    }
+
+    .progress-bar {
+      height: 6px;
+      background: #333;
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #00c9ea 0%, #1287a8 100%);
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    /* Scrollbar */
+    .test-list::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .test-list::-webkit-scrollbar-track {
+      background: #1a1a1a;
+    }
+
+    .test-list::-webkit-scrollbar-thumb {
+      background: #00c8ff;
+      border-radius: 4px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Left Panel: Test List -->
+    <div class="test-panel">
+      <div class="header">
+        <h1>🧪 Snowflix Test Suite</h1>
+        <div class="controls">
+          <button id="run-all-btn">▶ Run All Tests</button>
+          <button id="run-failed-btn" disabled>🔄 Re-run Failed</button>
+          <button id="clear-btn">🗑️ Clear</button>
+        </div>
+        <div class="stats">
+          <div class="stat">
+            <span class="stat-label">Passed:</span>
+            <span class="stat-value passed" id="passed-count">0</span>
+          </div>
+          <div class="stat">
+            <span class="stat-label">Failed:</span>
+            <span class="stat-value failed" id="failed-count">0</span>
+          </div>
+          <div class="stat">
+            <span class="stat-label">Pending:</span>
+            <span class="stat-value pending" id="pending-count">10</span>
+          </div>
+        </div>
+      </div>
+      <div class="test-list" id="test-list"></div>
+      <div class="progress-container">
+        <div class="progress-bar">
+          <div class="progress-fill" id="progress-fill"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Panel: Player Preview -->
+    <div class="player-panel">
+      <div class="player-header">
+        <h2>Live Test Preview</h2>
+        <div class="current-test" id="current-test">No test running</div>
+      </div>
+      <div class="iframe-container">
+        <iframe id="test-iframe" class="test-iframe" src="about:blank"></iframe>
+        <div class="loading-overlay" id="loading-overlay">
+          <div class="spinner"></div>
+          <span>Loading test environment...</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    class TestRunner {
+      constructor() {
+        this.tests = [];
+        this.results = { passed: 0, failed: 0, pending: 0 };
+        this.currentTestIndex = -1;
+        this.iframe = null;
+        this.iframeDoc = null;
+      }
+
+      test(name, description, testFn) {
+        this.tests.push({ name, description, testFn, status: 'pending', duration: 0, error: null });
+        this.results.pending++;
+      }
+
+      async runAll() {
+        this.resetResults();
+        this.renderTests();
+
+        for (let i = 0; i < this.tests.length; i++) {
+          this.currentTestIndex = i;
+          document.getElementById('current-test').textContent = `Running: ${this.tests[i].name}`;
+
+          await this.loadIframe();
+          await this.runTest(i);
+          await this.delay(500);
+        }
+
+        this.currentTestIndex = -1;
+        document.getElementById('current-test').textContent = 'All tests completed';
+        this.updateRerunButton();
+      }
+
+      async runTest(index) {
+        const test = this.tests[index];
+        const startTime = performance.now();
+
+        test.status = 'running';
+        test.error = null;
+        this.renderTest(index);
+
+        try {
+          const assert = {
+            ok: (value, message = 'Assertion failed') => {
+              if (!value) throw new Error(message);
+            },
+            equal: (actual, expected, message = 'Values not equal') => {
+              if (actual !== expected) {
+                throw new Error(`${message}\nExpected: ${expected}\nActual: ${actual}`);
+              }
+            },
+            exists: (value, message = 'Value does not exist') => {
+              if (value === null || value === undefined) {
+                throw new Error(message);
+              }
+            },
+            isVisible: (element, message = 'Element is not visible') => {
+              if (!element || element.offsetParent === null) {
+                throw new Error(message);
+              }
+            },
+            hasClass: (element, className, message = `Element missing class: ${className}`) => {
+              if (!element || !element.classList.contains(className)) {
+                throw new Error(message);
+              }
+            }
+          };
+
+          await test.testFn(this.iframeDoc, assert);
+
+          test.status = 'passed';
+          this.results.passed++;
+          this.results.pending--;
+        } catch (error) {
+          test.status = 'failed';
+          test.error = error.message;
+          this.results.failed++;
+          this.results.pending--;
+        }
+
+        test.duration = Math.round(performance.now() - startTime);
+        this.renderTest(index);
+        this.updateStats();
+        this.updateProgress();
+      }
+
+      async runFailed() {
+        const failedIndices = this.tests
+          .map((test, index) => test.status === 'failed' ? index : -1)
+          .filter(index => index !== -1);
+
+        for (const index of failedIndices) {
+          this.tests[index].status = 'pending';
+          this.results.failed--;
+          this.results.pending++;
+        }
+
+        this.updateStats();
+
+        for (const index of failedIndices) {
+          this.currentTestIndex = index;
+          document.getElementById('current-test').textContent = `Re-running: ${this.tests[index].name}`;
+
+          await this.loadIframe();
+          await this.runTest(index);
+          await this.delay(500);
+        }
+
+        this.currentTestIndex = -1;
+        document.getElementById('current-test').textContent = 'Re-run completed';
+        this.updateRerunButton();
+      }
+
+      clear() {
+        this.tests.forEach(test => {
+          test.status = 'pending';
+          test.duration = 0;
+          test.error = null;
+        });
+        this.resetResults();
+        this.renderTests();
+        this.currentTestIndex = -1;
+        document.getElementById('current-test').textContent = 'No test running';
+
+        // Clear iframe
+        this.iframeDoc = null;
+        this.iframe.src = 'about:blank';
+      }
+
+      async loadIframe() {
+        const loading = document.getElementById('loading-overlay');
+        loading.classList.remove('hidden');
+
+        this.iframe = document.getElementById('test-iframe');
+
+        const html = `
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <link href="https://vjs.zencdn.net/8.10.0/video-js.css" rel="stylesheet" />
+            <style>
+              body {
+                margin: 0;
+                background: #000;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                height: 100vh;
+              }
+              .video-js {
+                width: 90%;
+                max-width: 800px;
+              }
+            </style>
+          </head>
+          <body>
+            <video id="test-player" class="video-js vjs-default-skin" controls preload="auto" crossorigin="anonymous">
+              <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4" type="video/mp4" />
+            </video>
+            <script src="https://vjs.zencdn.net/8.10.0/video.min.js"><\/script>
+            <script src="/videojs-snowflix.js"><\/script>
+            <script>
+              (function() {
+                // Signal that everything is ready
+                window.playerReady = new Promise((resolve) => {
+                  const player = videojs('test-player', {
+                    controls: true,
+                    fluid: true,
+                    aspectRatio: '16:9',
+                  });
+
+                  window.testPlayer = player;
+
+                  // Wait for player to be fully ready
+                  player.ready(() => {
+                    // Initialize Snowflix after player is ready
+                    player.snowflix({
+                      float: 'top-right',
+                      lang: 'en',
+                    });
+
+                    // Give Snowflix plugin more time to initialize and render UI
+                    setTimeout(() => {
+                      const hasUI = document.querySelector('.snowflix-ui');
+                      const hasButton = document.querySelector('.vjs-snowflix-button');
+                      console.log('Snowflix ready check:', { hasUI: !!hasUI, hasButton: !!hasButton });
+                      window.snowflixReady = true;
+                      resolve();
+                    }, 1500);
+                  });
+                });
+              })();
+            <\/script>
+          </body>
+          </html>
+        `;
+
+        this.iframeDoc = this.iframe.contentDocument || this.iframe.contentWindow.document;
+        this.iframeDoc.open();
+        this.iframeDoc.write(html);
+        this.iframeDoc.close();
+
+        // Wait for the iframe window to be ready
+        await this.waitForIframeReady();
+
+        loading.classList.add('hidden');
+      }
+
+      async waitForIframeReady() {
+        const iframeWindow = this.iframe.contentWindow;
+
+        // Wait for window to be ready
+        await new Promise((resolve) => {
+          if (iframeWindow.playerReady) {
+            resolve();
+          } else {
+            const checkReady = setInterval(() => {
+              if (iframeWindow.playerReady) {
+                clearInterval(checkReady);
+                resolve();
+              }
+            }, 50);
+
+            // Timeout after 5 seconds
+            setTimeout(() => {
+              clearInterval(checkReady);
+              resolve();
+            }, 5000);
+          }
+        });
+
+        // Wait for playerReady promise if it exists
+        if (iframeWindow.playerReady) {
+          await iframeWindow.playerReady;
+        }
+
+        // Additional wait to ensure UI is fully rendered
+        await this.delay(500);
+      }
+
+      resetResults() {
+        this.results = {
+          passed: 0,
+          failed: 0,
+          pending: this.tests.length
+        };
+        this.updateStats();
+        this.updateProgress();
+      }
+
+      updateStats() {
+        document.getElementById('passed-count').textContent = this.results.passed;
+        document.getElementById('failed-count').textContent = this.results.failed;
+        document.getElementById('pending-count').textContent = this.results.pending;
+      }
+
+      updateProgress() {
+        const total = this.tests.length;
+        const completed = this.results.passed + this.results.failed;
+        const percentage = total > 0 ? (completed / total) * 100 : 0;
+        document.getElementById('progress-fill').style.width = percentage + '%';
+      }
+
+      updateRerunButton() {
+        const btn = document.getElementById('run-failed-btn');
+        btn.disabled = this.results.failed === 0;
+      }
+
+      renderTests() {
+        const container = document.getElementById('test-list');
+        container.innerHTML = '';
+        this.tests.forEach((test, index) => {
+          const testEl = this.createTestElement(test, index);
+          container.appendChild(testEl);
+        });
+      }
+
+      renderTest(index) {
+        const test = this.tests[index];
+        const container = document.getElementById('test-list');
+        const existingEl = container.children[index];
+
+        if (existingEl) {
+          const newEl = this.createTestElement(test, index);
+          container.replaceChild(newEl, existingEl);
+        }
+      }
+
+      createTestElement(test, index) {
+        const div = document.createElement('div');
+        div.className = `test-item ${test.status}`;
+        div.innerHTML = `
+          <div class="test-header">
+            <div class="test-status"></div>
+            <div class="test-name">${index + 1}. ${test.name}</div>
+            ${test.duration > 0 ? `<div class="test-duration">${test.duration}ms</div>` : ''}
+          </div>
+          <div class="test-description">${test.description}</div>
+          ${test.error ? `<div class="test-error">❌ ${test.error}</div>` : ''}
+        `;
+        return div;
+      }
+
+      delay(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+      }
+    }
+
+    const runner = new TestRunner();
+
+    // Define tests
+    runner.test(
+      'Plugin initialization',
+      'Verify that the Snowflix plugin initializes correctly on the video player',
+      async (doc, assert) => {
+        const player = doc.defaultView.testPlayer;
+        assert.exists(player, 'Player should exist');
+        assert.exists(player.snowflix, 'Snowflix plugin should be registered');
+      }
+    );
+
+    runner.test(
+      'Control bar button with SVG icon',
+      'Check if the Snowflix power button with SVG icon appears in the Video.js control bar',
+      async (doc, assert) => {
+        const button = doc.querySelector('.vjs-snowflix-button');
+        assert.exists(button, 'Control bar button should exist');
+        assert.isVisible(button, 'Control bar button should be visible');
+
+        const svg = button.querySelector('svg');
+        assert.exists(svg, 'SVG icon should exist in control bar button');
+        const path = svg.querySelector('path');
+        assert.exists(path, 'SVG should contain path element');
+      }
+    );
+
+    runner.test(
+      'Snowflix UI container',
+      'Check if the main Snowflix UI panel is present in the DOM',
+      async (doc, assert) => {
+        const ui = doc.querySelector('.snowflix-ui');
+        assert.exists(ui, 'Snowflix UI container should exist');
+      }
+    );
+
+    runner.test(
+      'Toggle button with SVG icon',
+      'Verify the floating toggle button (bottom-right) with SVG icon is present',
+      async (doc, assert) => {
+        const toggleBtn = doc.querySelector('.snowflix-toggle-btn');
+        assert.exists(toggleBtn, 'Toggle button should exist');
+        assert.isVisible(toggleBtn, 'Toggle button should be visible');
+
+        const svg = toggleBtn.querySelector('svg');
+        assert.exists(svg, 'SVG icon should exist in toggle button');
+        const path = svg.querySelector('path');
+        assert.exists(path, 'SVG should contain path element');
+      }
+    );
+
+    runner.test(
+      'UI toggle (open/close)',
+      'Test that clicking the control bar button opens and closes the Snowflix UI',
+      async (doc, assert) => {
+        const button = doc.querySelector('.vjs-snowflix-button');
+        const ui = doc.querySelector('.snowflix-ui');
+
+        // Test opening
+        button.click();
+        await runner.delay(300);
+        assert.hasClass(ui, 'snowflix-active', 'UI should have active class when opened');
+
+        // Test closing
+        button.click();
+        await runner.delay(300);
+        assert.hasClass(ui, 'snowflix-disabled', 'UI should have disabled class when closed');
+      }
+    );
+
+    runner.test(
+      'All 6 filter buttons',
+      'Verify all filter mode buttons exist (Billboard, TV, Flashlight, Desat, Toon, RGB)',
+      async (doc, assert) => {
+        const buttons = [
+          { id: 'snowflix-billboard-btn', name: 'Billboard' },
+          { id: 'snowflix-tv-btn', name: 'TV' },
+          { id: 'snowflix-flashlight-btn', name: 'Flashlight' },
+          { id: 'snowflix-desat-btn', name: 'Desaturation' },
+          { id: 'snowflix-toon-btn', name: 'Toon' },
+          { id: 'snowflix-rgb-btn', name: 'RGB' }
+        ];
+
+        for (const btn of buttons) {
+          const element = doc.getElementById(btn.id);
+          assert.exists(element, `${btn.name} button should exist`);
+        }
+      }
+    );
+
+    runner.test(
+      'Mute button toggle',
+      'Test that the mute button toggles the active state',
+      async (doc, assert) => {
+        const muteBtn = doc.getElementById('snowflix-mute-btn');
+        assert.exists(muteBtn, 'Mute button should exist');
+
+        const hasActive = muteBtn.classList.contains('snowflix-active');
+        muteBtn.click();
+        await runner.delay(100);
+
+        const nowHasActive = muteBtn.classList.contains('snowflix-active');
+        assert.ok(hasActive !== nowHasActive, 'Mute button state should toggle');
+      }
+    );
+
+    runner.test(
+      'Minimize with rotation',
+      'Test minimize button hides UI and toggle button rotates 180deg',
+      async (doc, assert) => {
+        const minimizeBtn = doc.getElementById('snowflix-minimize-btn');
+        const ui = doc.querySelector('.snowflix-ui');
+        const toggleBtn = doc.querySelector('.snowflix-toggle-btn');
+
+        // Open UI first
+        if (!ui.classList.contains('snowflix-active')) {
+          doc.querySelector('.vjs-snowflix-button').click();
+          await runner.delay(300);
+        }
+
+        // Click minimize
+        minimizeBtn.click();
+        await runner.delay(300);
+
+        assert.hasClass(ui, 'snowflix-disabled', 'UI should be minimized');
+        assert.hasClass(toggleBtn, 'minimized', 'Toggle button should have minimized class');
+      }
+    );
+
+    runner.test(
+      'Billboard filter activation',
+      'Test that clicking Billboard button activates the billboard filter',
+      async (doc, assert) => {
+        // Open UI
+        doc.querySelector('.vjs-snowflix-button').click();
+        await runner.delay(300);
+
+        // Click billboard button
+        const billboardBtn = doc.getElementById('snowflix-billboard-btn');
+        billboardBtn.click();
+        await runner.delay(800);
+
+        const billboardContainer = doc.getElementById('snowflix-billboard-container');
+        assert.hasClass(billboardBtn, 'snowflix-active', 'Billboard button should be active');
+        assert.hasClass(billboardContainer, 'snowflix-active', 'Billboard container should be active');
+      }
+    );
+
+    runner.test(
+      'Toggle button restores UI',
+      'Test that clicking the floating toggle button restores the minimized UI',
+      async (doc, assert) => {
+        const ui = doc.querySelector('.snowflix-ui');
+        const toggleBtn = doc.querySelector('.snowflix-toggle-btn');
+
+        // Open and minimize UI
+        if (!ui.classList.contains('snowflix-active')) {
+          doc.querySelector('.vjs-snowflix-button').click();
+          await runner.delay(300);
+        }
+        doc.getElementById('snowflix-minimize-btn').click();
+        await runner.delay(300);
+
+        // Click toggle to restore
+        toggleBtn.click();
+        await runner.delay(300);
+
+        assert.hasClass(ui, 'snowflix-active', 'UI should be restored to active state');
+        assert.ok(!toggleBtn.classList.contains('minimized'), 'Toggle button should not have minimized class');
+      }
+    );
+
+    // Event handlers
+    document.getElementById('run-all-btn').addEventListener('click', () => {
+      runner.runAll();
+    });
+
+    document.getElementById('run-failed-btn').addEventListener('click', () => {
+      runner.runFailed();
+    });
+
+    document.getElementById('clear-btn').addEventListener('click', () => {
+      runner.clear();
+    });
+
+    // Initialize
+    window.addEventListener('load', () => {
+      runner.renderTests();
+    });
+  </script>
+</body>
+</html>

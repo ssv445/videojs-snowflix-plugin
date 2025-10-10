@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Video.js Snowflix Plugin Demo</title>
+
+  <!-- Video.js CSS -->
+  <link href="https://vjs.zencdn.net/8.10.0/video-js.css" rel="stylesheet" />
+
+  <style>
+    body {
+      margin: 0;
+      padding: 20px;
+      font-family: Arial, sans-serif;
+      background: #1a1a1a;
+      color: #fff;
+    }
+
+    .demo-container {
+      max-width: 1280px;
+      margin: 0 auto;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+      color: #00c8ff;
+    }
+
+    .video-container {
+      position: relative;
+      width: 100%;
+      max-width: 960px;
+      margin: 0 auto 40px;
+    }
+
+    .video-js {
+      width: 100%;
+      height: auto;
+      aspect-ratio: 16/9;
+    }
+
+    .info {
+      background: #2a2a2a;
+      padding: 20px;
+      border-radius: 8px;
+      margin-top: 20px;
+    }
+
+    .info h2 {
+      margin-top: 0;
+      color: #00c8ff;
+    }
+
+    .info ul {
+      line-height: 1.8;
+    }
+
+    .credits {
+      text-align: center;
+      margin-top: 40px;
+      padding: 20px;
+      border-top: 1px solid #444;
+      color: #888;
+    }
+  </style>
+</head>
+<body>
+  <div class="demo-container">
+    <h1>Video.js Snowflix Accessibility Plugin</h1>
+
+    <div class="video-container">
+      <video
+        id="snowflix-player"
+        class="video-js vjs-default-skin"
+        controls
+        preload="auto"
+        crossorigin="anonymous"
+      >
+        <source
+          src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
+          type="video/mp4"
+        />
+        <p class="vjs-no-js">
+          To view this video please enable JavaScript, and consider upgrading to a
+          web browser that
+          <a href="https://videojs.com/html5-video-support/" target="_blank">
+            supports HTML5 video
+          </a>
+        </p>
+      </video>
+    </div>
+
+    <div class="info">
+      <h2>About This Plugin</h2>
+      <p>
+        The Snowflix plugin provides accessibility features with visual effect filters
+        for disabled users. It offers 6 different viewing modes:
+      </p>
+      <ul>
+        <li><strong>Billboard:</strong> 3D billboard effect with day/night modes and rotation controls</li>
+        <li><strong>TV:</strong> 3D television viewing angle with day/night toggle</li>
+        <li><strong>Flashlight:</strong> Spotlight effect with adjustable position and size</li>
+        <li><strong>Desaturation:</strong> Adjustable color saturation from B&W to full color</li>
+        <li><strong>Toon:</strong> Cartoon/comic book effect with bright lines, dark lines, or color modes</li>
+        <li><strong>RGB:</strong> Color filter options (red, green, blue, and combinations)</li>
+      </ul>
+      <p>
+        <strong>How to use:</strong> Click the power button to activate the plugin, then select
+        a viewing mode from the right panel. Each mode has customizable options.
+      </p>
+    </div>
+
+    <div class="credits">
+      <p>Demo video: Big Buck Bunny (Blender Foundation) | CC BY 3.0</p>
+      <p>Powered by <a href="https://www.snowflixtv.com/" target="_blank" style="color: #00c8ff;">Snowflix</a></p>
+    </div>
+  </div>
+
+  <!-- Video.js Library -->
+  <script src="https://vjs.zencdn.net/8.10.0/video.min.js"></script>
+
+  <!-- Snowflix Plugin (will be bundled by webpack) -->
+  <script src="videojs-snowflix.js"></script>
+
+  <script>
+    // Initialize Video.js player
+    const player = videojs('snowflix-player', {
+      controls: true,
+      fluid: false,
+      aspectRatio: '16:9',
+    });
+
+    // Initialize Snowflix plugin
+    player.snowflix({
+      float: 'top-right', // Position of UI panel: 'top-right', 'top-left', 'bottom-right', 'bottom-left'
+      lang: 'en', // Language: 'en' for English (default), remove or set to undefined for Hebrew
+    });
+
+    // Log player ready
+    player.ready(function() {
+      console.log('Video.js player is ready with Snowflix plugin!');
+    });
+  </script>
+</body>
+</html>
