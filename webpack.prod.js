@@ -1,6 +1,7 @@
 const { merge } = require('webpack-merge');
 const common = require('./webpack.common.js');
 const path = require('path');
+const TerserPlugin = require('terser-webpack-plugin');
 
 module.exports = merge(common, {
   mode: 'production',
@@ -22,5 +23,17 @@ module.exports = merge(common, {
       amd: 'video.js',
       root: 'videojs',
     },
+  },
+  optimization: {
+    minimizer: [
+      new TerserPlugin({
+        terserOptions: {
+          format: {
+            comments: /^\**!|@preserve|@license|@cc_on/i,
+          },
+        },
+        extractComments: false, // Don't extract comments to separate file
+      }),
+    ],
   },
 });
