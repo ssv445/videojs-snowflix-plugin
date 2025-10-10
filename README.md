@@ -112,9 +112,24 @@ Output files:
 
 ## License
 
-MIT © Shyam Verma
+MIT License
+
+This project is a port of the Snowflix Kaltura plugin to Video.js.
+
+- **Original work:** Snowflix team (https://www.snowflixtv.com/)
+- **Video.js port:** Shyam Verma
+
+See [LICENSE](LICENSE) file for full details.
+
+## Credits
+
+- Original Snowflix Kaltura plugin by Snowflix team and kandabi
+- Ported to Video.js by Shyam Verma
+- Built with [Video.js](https://videojs.com/) and [Three.js](https://threejs.org/)
 
 ## Links
 
 - [Snowflix Website](https://www.snowflixtv.com/)
+- [npm Package](https://www.npmjs.com/package/videojs-snowflix)
+- [GitHub Repository](https://github.com/ssv445/videojs-snowflix-plugin)
 - [Video.js Docs](https://videojs.com/)
