@@ -4,6 +4,12 @@ Accessibility plugin for Video.js providing visual effect filters for enhanced v
 
 ## Installation
 
+### From npm (Recommended)
+
+```bash
+npm install videojs-snowflix
+```
+
 ### From GitHub
 
 ```bash
@@ -21,12 +27,6 @@ cd /path/to/videojs-snowflix
 npm link
 cd /path/to/your-project
 npm link videojs-snowflix
-```
-
-### From npm (When Published)
-
-```bash
-npm install videojs-snowflix
 ```
 
 ### Manual Installation
