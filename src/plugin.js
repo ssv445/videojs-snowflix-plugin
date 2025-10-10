@@ -924,6 +924,7 @@ class SnowflixPlugin extends Plugin {
 }
 
 // Register the plugin with Video.js
+// Following the official Video.js plugin guidelines
 videojs.registerPlugin('snowflix', SnowflixPlugin);
 
 export default SnowflixPlugin;

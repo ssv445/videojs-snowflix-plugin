@@ -135,7 +135,37 @@ Output files are generated in the `dist/` folder:
 - WebGL-capable browser
 - CORS-enabled video sources
 
-**Important**: Videos must support CORS. Add `crossorigin="anonymous"` to your video element.
+**Important**:
+- Videos must support CORS. Add `crossorigin="anonymous"` to your video element.
+- Load Video.js **before** the Snowflix plugin
+
+## Troubleshooting
+
+### "Plugin trying to register before video.js is ready"
+
+Make sure Video.js is loaded before the Snowflix plugin:
+
+```html
+<!-- ✅ Correct order -->
+<script src="https://vjs.zencdn.net/8.10.0/video.min.js"></script>
+<script src="node_modules/videojs-snowflix/dist/videojs-snowflix.min.js"></script>
+
+<!-- ❌ Wrong order -->
+<script src="node_modules/videojs-snowflix/dist/videojs-snowflix.min.js"></script>
+<script src="https://vjs.zencdn.net/8.10.0/video.min.js"></script>
+```
+
+With bundlers, ensure Video.js is imported first:
+
+```javascript
+// ✅ Correct
+import videojs from 'video.js';
+import 'videojs-snowflix';
+
+// ❌ Wrong
+import 'videojs-snowflix';
+import videojs from 'video.js';
+```
 
 ## License
 
