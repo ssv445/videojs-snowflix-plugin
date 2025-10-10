@@ -8,6 +8,12 @@ Accessibility plugin for Video.js providing visual effect filters for enhanced v
 npm install videojs-snowflix
 ```
 
+The package includes both UMD and ESM builds:
+- **UMD**: `dist/videojs-snowflix.min.js` (for browsers and CommonJS)
+- **ESM**: `dist/videojs-snowflix.esm.js` (for modern bundlers)
+
+Modern bundlers will automatically use the ESM version.
+
 ## Usage
 
 ### In HTML

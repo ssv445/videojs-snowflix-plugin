@@ -1,8 +1,15 @@
 {
   "name": "videojs-snowflix",
-  "version": "1.0.6",
+  "version": "1.1.0",
   "description": "Accessibility video plugin for Video.js with visual effect filters for disabled users",
   "main": "dist/videojs-snowflix.min.js",
+  "module": "dist/videojs-snowflix.esm.js",
+  "exports": {
+    ".": {
+      "import": "./dist/videojs-snowflix.esm.js",
+      "require": "./dist/videojs-snowflix.min.js"
+    }
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/ssv445/videojs-snowflix-plugin.git"
