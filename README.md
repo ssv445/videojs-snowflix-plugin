@@ -4,7 +4,13 @@ Accessibility plugin for Video.js providing visual effect filters for enhanced v
 
 ## Installation
 
-### From Local Package (Unpublished)
+### From GitHub
+
+```bash
+npm install git+https://github.com/ssv445/videojs-snowflix-plugin.git
+```
+
+### From Local Package
 
 ```bash
 # Option 1: Install from local path
