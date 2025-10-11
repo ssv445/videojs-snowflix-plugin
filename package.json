@@ -1,6 +1,6 @@
 {
   "name": "videojs-snowflix",
-  "version": "1.1.1",
+  "version": "1.2.0",
   "description": "Accessibility video plugin for Video.js with visual effect filters for disabled users",
   "type": "module",
   "main": "./dist/videojs-snowflix.js",
