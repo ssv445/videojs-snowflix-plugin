@@ -95,7 +95,7 @@ export default defineConfig({
     // Source maps for debugging
     sourcemap: true,
 
-    // Don't clear dist before build (for incremental builds)
+    // Clear dist before build (default behavior)
     emptyOutDir: true
   },
 
