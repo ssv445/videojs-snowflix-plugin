@@ -5,3 +5,4 @@ export * from './audio';
 export * from './state';
 export * from './dom';
 export * from './api';
+export * from './logger';

@@ -192,10 +192,32 @@ function VideoPlayer() {
 
 | Option | Type | Default | Description |
 |--------|------|---------|-------------|
-| `float` | `string` | - | UI panel position |
+| `float` | `string` | - | UI panel position (`'top-right'`, `'top-left'`, `'bottom-right'`, `'bottom-left'`) |
 | `lang` | `string` | `'en'` | Interface language |
 | `targetId` | `string` | - | Custom container element ID |
 | `isMuted` | `boolean` | `false` | Initial mute state |
+| `debug` | `boolean` | `false` | Enable debug logging to console |
+
+### Debug Mode
+
+Enable debug mode to see detailed console logs for troubleshooting:
+
+```javascript
+player.snowflix({
+  debug: true,  // Enable debug logging
+  float: 'top-right'
+});
+```
+
+When `debug: true`, the plugin will log:
+- Plugin initialization
+- Filter activations
+- User interactions
+- Speech synthesis events
+- Storage operations
+- WebGL rendering events
+
+**Note:** Keep `debug: false` in production to avoid console pollution.
 
 ## Features
 

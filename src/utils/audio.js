@@ -3,6 +3,7 @@ import slide from '../../public/audio/slide.mp3?url';
 import click from '../../public/audio/click.mp3?url';
 
 import { appState } from './state';
+import { logWarn, logDebug, logError } from './logger';
 
 const playAudio = (audio) => {
   if (!appState.isMuted) {
@@ -18,7 +19,7 @@ const playAudio = (audio) => {
 const speak = (text) => {
   if (!appState.isMuted) {
     if (!('speechSynthesis' in window)) {
-      console.warn('Speech synthesis not supported in this browser');
+      logWarn('Speech synthesis not supported in this browser');
       return;
     }
 
@@ -33,26 +34,26 @@ const speak = (text) => {
       utterance.volume = 1.0; // Full volume
 
       // Debug logging
-      console.log('Speaking:', text);
+      logDebug('Speaking:', text);
 
       utterance.onstart = () => {
-        console.log('Speech started:', text);
+        logDebug('Speech started:', text);
       };
 
       utterance.onerror = (event) => {
-        console.error('Speech error:', event);
+        logError('Speech error:', event);
       };
 
       utterance.onend = () => {
-        console.log('Speech ended:', text);
+        logDebug('Speech ended:', text);
       };
 
       window.speechSynthesis.speak(utterance);
     } catch (error) {
-      console.error('Error in speak function:', error);
+      logError('Error in speak function:', error);
     }
   } else {
-    console.log('Audio is muted, not speaking:', text);
+    logDebug('Audio is muted, not speaking:', text);
   }
 };
 

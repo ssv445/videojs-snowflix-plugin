@@ -5,6 +5,7 @@ import { CONSTANTS, SCENE, TOON_MODES, UI_CONTAINERS, UI_POSITIONS } from './con
 import { Desat, Rgb, Toon, Billboard, TV, Flashlight } from './filters';
 import { appState, setAppState, logSnowflix, getUrlParams, setMediaId, setClientId } from './utils';
 import { getUserData, saveUserData, saveBrowserData, findAspectRatio, replaceImageSources } from './utils';
+import { setDebugMode, logDebug, logWarn, logError } from './utils';
 
 import localization from './localization.json';
 import snowflixHtml from './snowflix.html?raw';
@@ -58,13 +59,20 @@ class SnowflixPlugin extends Plugin {
   constructor(player, options = {}) {
     super(player, options);
     this.defaultConfig = options;
+
+    // Set debug mode based on options
+    if (options.debug === true) {
+      setDebugMode(true);
+      logDebug('Snowflix plugin initialized with debug mode enabled');
+    }
+
     this.initMembers();
     this.initEvents();
   }
 
   initEvents() {
     if (!this.isSupportedBrowser()) {
-      console.error('Unsupported browser.');
+      logError('Unsupported browser.');
       return;
     }
 
@@ -200,7 +208,7 @@ class SnowflixPlugin extends Plugin {
         this.setupUserData(data.message);
       })
       .catch((error) => {
-        console.log('error', error);
+        logDebug('error', error);
         this.setupUserData(appState);
       });
 
@@ -279,7 +287,7 @@ class SnowflixPlugin extends Plugin {
     }
 
     Utils.Dom.addClassName(this.snowflixUI, CONSTANTS.DISABLED_CLASS);
-    console.log('defaultConfig', this.defaultConfig);
+    logDebug('defaultConfig', this.defaultConfig);
     if (this.defaultConfig?.float) {
       Utils.Dom.addClassName(this.snowflixUI, this.defaultConfig.float);
     }
@@ -693,7 +701,7 @@ class SnowflixPlugin extends Plugin {
         this.setRendererSize(dimensions);
         this.loadFilters();
       } else if (++calculateCanvasCounter >= CONSTANTS.RESIZE.LIMIT) {
-        console.error('the video size is unavailable. cannot set the canvas size.');
+        logError('the video size is unavailable. cannot set the canvas size.');
       }
     }, CONSTANTS.RESIZE.INTERVAL);
   }

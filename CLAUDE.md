@@ -115,9 +115,30 @@ player.snowflix({
   float: 'top-right',  // UI position: 'top-right', 'top-left', 'bottom-right', 'bottom-left'
   lang: 'en',          // Language code for localization
   targetId: 'custom',  // Custom container element ID for UI
-  isMuted: false       // Initial mute state
+  isMuted: false,      // Initial mute state
+  debug: false         // Enable debug logging to console (default: false)
 });
 ```
+
+### Debug Logging
+
+The plugin includes a runtime debug flag that controls console logging:
+
+- **Production (default):** `debug: false` - No console logs (silent operation)
+- **Development:** `debug: true` - Detailed logging for troubleshooting
+
+Debug logs include:
+- Plugin initialization
+- Filter activations and state changes
+- Speech synthesis events
+- localStorage operations
+- WebGL rendering events
+
+**Implementation:**
+- Logger utility: `src/utils/logger.js` - exports `setDebugMode()`, `logDebug()`, `logWarn()`, `logError()`
+- Debug mode is set in plugin constructor based on `options.debug`
+- All console.log statements wrapped with logger functions
+- Errors are always logged (with or without debug), but prefixed only when debug is enabled
 
 ## File Naming Conventions
 

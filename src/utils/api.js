@@ -1,4 +1,5 @@
 import { appState, uuid } from './index';
+import { logWarn, logDebug } from './logger';
 
 const STORAGE_KEY = 'snowflix_user_data';
 
@@ -19,7 +20,7 @@ export const getUserData = () => {
         resolve({ message: null });
       }
     } catch (error) {
-      console.warn('Error reading from localStorage:', error);
+      logWarn('Error reading from localStorage:', error);
       resolve({ message: null });
     }
   });
@@ -40,7 +41,7 @@ export const saveUserData = () => {
       localStorage.setItem(`${STORAGE_KEY}_${uuid}`, JSON.stringify(payload));
       resolve();
     } catch (error) {
-      console.warn('Error saving to localStorage:', error);
+      logWarn('Error saving to localStorage:', error);
       resolve();
     }
   });
@@ -67,7 +68,7 @@ export const saveBrowserData = () => {
 export const saveLogData = (logData) => {
   return new Promise((resolve) => {
     // Log to console for debugging purposes
-    console.log('Snowflix Event:', logData);
+    logDebug('Snowflix Event:', logData);
     resolve();
   });
 };
