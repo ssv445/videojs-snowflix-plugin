@@ -8,8 +8,7 @@
   "style": "./dist/videojs-snowflix.css",
   "exports": {
     ".": {
-      "import": "./dist/videojs-snowflix.js",
-      "types": "./dist/videojs-snowflix.d.ts"
+      "import": "./dist/videojs-snowflix.js"
     },
     "./dist/*.css": "./dist/*.css",
     "./dist/assets/*": "./dist/assets/*"
