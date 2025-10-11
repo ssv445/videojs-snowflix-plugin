@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite';
 import { resolve } from 'path';
 import glsl from 'vite-plugin-glsl';
+import { visualizer } from 'rollup-plugin-visualizer';
 
 export default defineConfig({
   plugins: [
@@ -17,6 +18,12 @@ export default defineConfig({
       defaultExtension: 'glsl',
       exclude: undefined,
       root: '/'
+    }),
+    visualizer({
+      filename: './dist/stats.html',
+      open: false,
+      gzipSize: true,
+      brotliSize: true
     })
   ],
 
@@ -34,7 +41,9 @@ export default defineConfig({
         'video.js',
         'three',
         '@tweenjs/tween.js',
-        'draggable'
+        'draggable',
+        // Externalize all Three.js submodules
+        /^three\//
       ],
 
       output: {
