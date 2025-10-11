@@ -4,7 +4,7 @@ import { injectShaderCode } from './shaders';
 import { CONSTANTS, SCENE, TOON_MODES, UI_CONTAINERS, UI_POSITIONS } from './constants';
 import { Desat, Rgb, Toon, Billboard, TV, Flashlight } from './filters';
 import { appState, setAppState, logSnowflix, getUrlParams, setMediaId, setClientId } from './utils';
-import { getUserData, saveUserData, saveBrowserData, findAspectRatio, imageUtils } from './utils';
+import { getUserData, saveUserData, saveBrowserData, findAspectRatio, replaceImageSources } from './utils';
 
 import localization from './localization.json';
 import snowflixHtml from './snowflix.html';
@@ -218,6 +218,9 @@ class SnowflixPlugin extends Plugin {
     this.snowflixRoot = Utils.Dom.createElement('div');
     this.snowflixRoot.innerHTML = snowflixHtml;
     Utils.Dom.addClassName(this.snowflixRoot, CONSTANTS.SNOWFLIX_ROOT);
+
+    // Replace all image src attributes with base64 data URLs
+    replaceImageSources(this.snowflixRoot);
 
     let targetElement;
     if (this.defaultConfig.targetId) {

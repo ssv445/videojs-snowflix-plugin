@@ -5,18 +5,20 @@ Accessibility plugin for Video.js providing visual effect filters for enhanced v
 ## Installation
 
 ```bash
-npm install videojs-snowflix
+npm install videojs-snowflix video.js
 ```
 
-The package includes both UMD and ESM builds:
-- **UMD**: `dist/videojs-snowflix.min.js` (for browsers and CommonJS)
-- **ESM**: `dist/videojs-snowflix.esm.js` (for modern bundlers)
+The package includes:
+- **UMD build**: `dist/videojs-snowflix.min.js` (for browsers and CommonJS)
+- **ESM build**: `dist/videojs-snowflix.esm.js` (for modern bundlers like Webpack, Vite, Rollup)
+- **CSS file**: `dist/videojs-snowflix.css` (required for proper styling)
+- **Image assets**: Extracted large images (>10KB) for better performance
 
-Modern bundlers will automatically use the ESM version.
+Modern bundlers will automatically use the ESM version via the `module` field in package.json.
 
 ## Usage
 
-### In HTML
+### In HTML (Browser)
 
 ```html
 <!DOCTYPE html>
@@ -24,6 +26,9 @@ Modern bundlers will automatically use the ESM version.
 <head>
   <!-- Video.js CSS -->
   <link href="https://vjs.zencdn.net/8.10.0/video-js.css" rel="stylesheet">
+
+  <!-- Snowflix Plugin CSS -->
+  <link href="node_modules/videojs-snowflix/dist/videojs-snowflix.css" rel="stylesheet">
 </head>
 <body>
   <video id="my-player" class="video-js" controls crossorigin="anonymous">
@@ -39,35 +44,123 @@ Modern bundlers will automatically use the ESM version.
   <script>
     const player = videojs('my-player');
     player.snowflix({
-      float: 'top-right',  // Optional: UI position
-      lang: 'en'           // Optional: language
+      float: 'top-right',  // Optional: UI position ('top-right', 'top-left', 'bottom-right', 'bottom-left')
+      lang: 'en'           // Optional: language code
     });
   </script>
 </body>
 </html>
 ```
 
-### With a Bundler (Webpack, Vite, etc.)
+### With a Bundler (Webpack, Vite, Rollup)
 
 ```javascript
 import videojs from 'video.js';
 import 'video.js/dist/video-js.css';
 import 'videojs-snowflix';
+import 'videojs-snowflix/dist/videojs-snowflix.css'; // Important: Import CSS
 
-const player = videojs('my-player');
+const player = videojs('my-player', {
+  controls: true,
+  responsive: true,
+  fluid: true,
+  sources: [{
+    src: 'https://example.com/video.mp4',
+    type: 'video/mp4'
+  }]
+});
+
+// Initialize Snowflix plugin
 player.snowflix({
   float: 'top-right',
   lang: 'en'
 });
 ```
 
-### In React/Vue/Angular
+### Next.js (App Router)
+
+For Next.js, you need to use dynamic imports to prevent SSR issues:
+
+**components/VideoPlayer.tsx**
+```typescript
+'use client';
+
+import { useEffect, useRef } from 'react';
+import videojs from 'video.js';
+import type Player from 'video.js/dist/types/player';
+import 'video.js/dist/video-js.css';
+import 'videojs-snowflix/dist/videojs-snowflix.css';
+
+// Dynamic import for Snowflix
+if (typeof window !== 'undefined') {
+  import('videojs-snowflix');
+}
+
+export default function VideoPlayer({ options, snowflixOptions }) {
+  const videoRef = useRef<HTMLDivElement>(null);
+  const playerRef = useRef<Player | null>(null);
+
+  useEffect(() => {
+    if (!playerRef.current && videoRef.current) {
+      const videoElement = document.createElement('video-js');
+      videoElement.classList.add('vjs-big-play-centered');
+      videoRef.current.appendChild(videoElement);
+
+      const player = playerRef.current = videojs(videoElement, options);
+
+      player.ready(() => {
+        if (typeof (player as any).snowflix === 'function') {
+          (player as any).snowflix(snowflixOptions);
+        }
+      });
+    }
+  }, [options, snowflixOptions]);
+
+  useEffect(() => {
+    return () => {
+      if (playerRef.current && !playerRef.current.isDisposed()) {
+        playerRef.current.dispose();
+      }
+    };
+  }, []);
+
+  return <div data-vjs-player><div ref={videoRef} /></div>;
+}
+```
+
+**app/page.tsx**
+```typescript
+import dynamic from 'next/dynamic';
+
+const VideoPlayer = dynamic(() => import('@/components/VideoPlayer'), {
+  ssr: false
+});
+
+export default function Home() {
+  return (
+    <VideoPlayer
+      options={{
+        sources: [{ src: 'video.mp4', type: 'video/mp4' }]
+      }}
+      snowflixOptions={{
+        float: 'top-right',
+        lang: 'en'
+      }}
+    />
+  );
+}
+```
+
+**See the complete Next.js demo in [`examples/nextjs-demo`](./examples/nextjs-demo)**
+
+### React/Vue (Traditional)
 
 ```javascript
 import { useEffect, useRef } from 'react';
 import videojs from 'video.js';
 import 'video.js/dist/video-js.css';
 import 'videojs-snowflix';
+import 'videojs-snowflix/dist/videojs-snowflix.css';
 
 function VideoPlayer() {
   const videoRef = useRef(null);
@@ -112,6 +205,27 @@ function VideoPlayer() {
 - **Persistent Settings**: Saves preferences to localStorage
 - **Responsive**: Auto-adjusts to player size
 
+## Demo
+
+A complete Next.js 15 demo application is available in the [`examples/nextjs-demo`](./examples/nextjs-demo) directory.
+
+**To run the demo:**
+
+```bash
+cd examples/nextjs-demo
+npm install
+npm run dev
+```
+
+Open [http://localhost:3000](http://localhost:3000) to see the plugin in action with a sample video.
+
+The demo includes:
+- Full Next.js 15 App Router integration
+- Dynamic imports for SSR compatibility
+- TypeScript support
+- Tailwind CSS styling
+- Sample video with all 6 accessibility filters
+
 ## Development
 
 ### Building from Source
@@ -132,9 +246,11 @@ npm run build
 ```
 
 Output files are generated in the `dist/` folder:
-- `dist/videojs-snowflix.min.js` (~1.6MB) - UMD bundle with all assets embedded
-- `dist/videojs-snowflix.esm.js` (~1.6MB) - ESM bundle with all assets embedded
-- All assets (images, 3D models, audio, fonts) are inlined as base64
+- `dist/videojs-snowflix.min.js` (~1.3MB) - UMD bundle
+- `dist/videojs-snowflix.esm.js` (~1.3MB) - ESM bundle
+- `dist/videojs-snowflix.css` (55KB) - Extracted CSS styles
+- `dist/*.svg`, `dist/*.jpeg`, `dist/*.gif` - Large image assets (>10KB)
+- Small assets (fonts, audio, 3D models, shaders, small images <10KB) are inlined as base64
 
 ## Requirements
 

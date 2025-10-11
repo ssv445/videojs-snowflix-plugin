@@ -1,7 +1,13 @@
 const path = require('path');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = {
   entry: './src/plugin.js',
+  plugins: [
+    new MiniCssExtractPlugin({
+      filename: 'videojs-snowflix.css',
+    }),
+  ],
   module: {
     rules: [
       //*** Babel
@@ -23,7 +29,7 @@ module.exports = {
         test: /\.(woff|woff2)$/i,
         type: 'asset/inline',
       },
-      //*** Images - inline as base64 for npm distribution
+      //*** Images - inline ALL images as base64 for npm distribution
       {
         test: /\.(png|svg|jpg|jpeg|gif)$/i,
         type: 'asset/inline',
@@ -38,10 +44,10 @@ module.exports = {
         test: /\.(glb|gltf)$/i,
         type: 'asset/inline',
       },
-      //*** Css
+      //*** Css - extract to separate file for npm distribution
       {
         test: /\.css$/i,
-        use: ['style-loader', 'css-loader'],
+        use: [MiniCssExtractPlugin.loader, 'css-loader'],
       },
       //*** Shaders
       {

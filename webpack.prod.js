@@ -15,7 +15,7 @@ const umdConfig = merge(common, {
       export: 'default',
     },
     globalObject: 'this',
-    clean: true, // Clean dist folder
+    clean: false, // Don't auto-clean to preserve ESM build
   },
   externals: {
     'video.js': {
