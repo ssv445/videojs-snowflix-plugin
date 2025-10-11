@@ -2,22 +2,17 @@ import { DESAT_LEVELS, SCENE } from '../constants';
 import { appState, toggleLargeSlider, desatAudio, saveUserData, logSnowflix } from '../utils';
 
 class Desat {
-  debugGui;
   saturation;
   uniforms;
   isActive;
 
-  constructor(uniforms, debugGui) {
-    this.debugGui = debugGui;
+  constructor(uniforms) {
     this.uniforms = uniforms;
 
     this.saturation = DESAT_LEVELS[3];
     this.uniforms.saturation = { value: this.saturation };
 
     this.initUI();
-    /// #if DEBUG
-    this.initDebugUI();
-    /// #endif
   }
 
   update() {
@@ -66,18 +61,6 @@ class Desat {
       toggleLargeSlider(this.slider);
     }
   }
-
-  /// #if DEBUG
-  initDebugUI() {
-    const folder = this.debugGui.addFolder('Desat');
-    folder
-      .add(this, 'saturation', 0, 2, 0.05)
-      .name('Saturation')
-      .onChange(() => {
-        this.update();
-      });
-  }
-  /// #endif
 }
 
 export { Desat };

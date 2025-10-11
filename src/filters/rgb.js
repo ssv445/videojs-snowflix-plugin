@@ -11,14 +11,12 @@ const Utils = {
 };
 
 class Rgb {
-  debugGui;
   hueActive;
   uniforms;
   plane;
   hue;
 
-  constructor(uniforms, plane, debugGui) {
-    this.debugGui = debugGui;
+  constructor(uniforms, plane) {
     this.uniforms = uniforms;
     this.plane = plane;
 
@@ -30,9 +28,6 @@ class Rgb {
     this.uniforms.hue = { value: this.hue };
 
     this.initUI();
-    /// #if DEBUG
-    this.initDebugUI();
-    /// #endif
   }
 
   update() {
@@ -115,25 +110,6 @@ class Rgb {
     this.hueActive = false;
     this.update();
   }
-
-  /// #if DEBUG
-  initDebugUI() {
-    const folder = this.debugGui.addFolder('Rgb');
-    folder
-      .add(this, 'hueActive', 0, 360, 1)
-      .name('Hue Active')
-      .onChange(() => {
-        this.update();
-      });
-
-    folder
-      .add(this, 'hue', 0, 360, 1)
-      .name('Hue')
-      .onChange(() => {
-        this.update();
-      });
-  }
-  /// #endif
 }
 
 export { Rgb };

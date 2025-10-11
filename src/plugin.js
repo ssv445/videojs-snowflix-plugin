@@ -27,12 +27,6 @@ const Utils = {
   },
 };
 
-/// #if DEBUG
-import * as dat from 'dat.gui';
-import initThreeDebug from 'three-dat.gui';
-initThreeDebug(dat);
-/// #endif
-
 const Plugin = videojs.getPlugin('plugin');
 
 class SnowflixPlugin extends Plugin {
@@ -43,7 +37,6 @@ class SnowflixPlugin extends Plugin {
   perspective;
   renderer;
   uniforms;
-  debugGui;
   filters;
   texture;
   frameId;
@@ -175,27 +168,23 @@ class SnowflixPlugin extends Plugin {
     this.scene.add(this.ambient);
 
     this.updateCanvasSize();
-    /// #if DEBUG
-    this.initDebugUI();
-    /// #endif
   }
 
   loadFilters() {
     if (!this.filtersLoaded) {
       this.filtersLoaded = true;
-      this.filters.rgb = new Rgb(this.uniforms, this.plane, this.debugGui);
-      this.filters.desat = new Desat(this.uniforms, this.debugGui);
-      this.filters.toon = new Toon(this.uniforms, this.plane, this.aspectRatio, this.debugGui);
-      this.filters.flashlight = new Flashlight(this.scene, this.ambient, this.aspectRatio, this.debugGui);
-      this.filters.tv = new TV(this.scene, this.plane, this.ambient, this.loaders, this.perspective, this.debugGui);
+      this.filters.rgb = new Rgb(this.uniforms, this.plane);
+      this.filters.desat = new Desat(this.uniforms);
+      this.filters.toon = new Toon(this.uniforms, this.plane, this.aspectRatio);
+      this.filters.flashlight = new Flashlight(this.scene, this.ambient, this.aspectRatio);
+      this.filters.tv = new TV(this.scene, this.plane, this.ambient, this.loaders, this.perspective);
       this.filters.billboard = new Billboard(
         this.uniforms,
         this.scene,
         this.plane,
         this.ambient,
         this.loaders,
-        this.perspective,
-        this.debugGui
+        this.perspective
       );
 
       this.scene.add(this.plane);
@@ -218,11 +207,6 @@ class SnowflixPlugin extends Plugin {
   }
 
   initUI() {
-    /// #if DEBUG
-    this.debugGui = new dat.GUI();
-    this.debugGui.close();
-    /// #endif
-
     this.snowflixRoot = Utils.Dom.createElement('div');
     this.snowflixRoot.innerHTML = snowflixHtml;
     Utils.Dom.addClassName(this.snowflixRoot, CONSTANTS.SNOWFLIX_ROOT);
@@ -838,7 +822,6 @@ class SnowflixPlugin extends Plugin {
     this.snowflixUI = null;
     this.isPowered = false;
     this.renderer = null;
-    this.debugGui = null;
     this.uniforms = null;
     this.texture = null;
     this.frameId = null;
@@ -868,11 +851,6 @@ class SnowflixPlugin extends Plugin {
     if (this.snowflixRoot) {
       this.snowflixRoot.remove();
     }
-    /// #if DEBUG
-    if (this.debugGui) {
-      this.debugGui.destroy();
-    }
-    /// #endif
     if (this.frameId) {
       cancelAnimationFrame(this.frameId);
       this.frameId = null;
@@ -904,34 +882,6 @@ class SnowflixPlugin extends Plugin {
     this.initMembers();
     this.initEvents();
   }
-
-  /// #if DEBUG
-  initDebugUI() {
-    this.debugGui
-      .add(appState, 'currentScene', {
-        Default: SCENE.Default,
-        Flashlight: SCENE.Flashlight,
-        Billboard: SCENE.Billboard,
-        TV: SCENE.TV,
-      })
-      .name('Scene')
-      .onChange((filter) => this.toggleFilters(filter));
-
-    const folder = this.debugGui.addFolder('Camera');
-    folder.addCamera('Perspective', this.perspective);
-
-    const updateLookAt = () => this.filters.tv.updateLookAt();
-
-    folder.add(this.perspective.position, 'x', -10, 10, 0.000001).onChange(updateLookAt).name('Position X');
-    folder.add(this.perspective.position, 'y', -10, 10, 0.000001).onChange(updateLookAt).name('Position Y');
-    folder.add(this.perspective.position, 'z', -10, 10, 0.000001).onChange(updateLookAt).name('Position Z');
-
-    folder.add(this.perspective.rotation, 'x', -10, 10, 0.000001).onChange(updateLookAt).name('Rotation X');
-    folder.add(this.perspective.rotation, 'y', -10, 10, 0.000001).onChange(updateLookAt).name('Rotation Y');
-    folder.add(this.perspective.rotation, 'z', -10, 10, 0.000001).onChange(updateLookAt).name('Rotation Z');
-  }
-
-  /// #endif
 }
 
 // Register the plugin with Video.js

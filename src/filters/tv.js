@@ -10,7 +10,6 @@ import { appState, toggleSwitch, tvAudio, saveUserData, logSnowflix, logError } 
 class TV {
   lookAtPosition;
   pointLight;
-  debugGui;
   material;
   tvModel;
   scene;
@@ -18,10 +17,9 @@ class TV {
 
   isActive;
 
-  constructor(scene, plane, ambient, loaders, camera, debugGui) {
+  constructor(scene, plane, ambient, loaders, camera) {
     this.material = plane.material;
     this.projectAmbient = ambient;
-    this.debugGui = debugGui;
     this.camera = camera;
     this.plane = plane;
     this.scene = scene;
@@ -101,9 +99,6 @@ class TV {
       (model) => {
         this.setupModel(model);
         this.initUI();
-        /// #if DEBUG
-        this.initDebugUI();
-        /// #endif
       },
       null,
       (error) => {
@@ -234,36 +229,6 @@ class TV {
 
     window.addEventListener('resize', this.initCursorDrag.bind(this));
   }
-
-  /// #if DEBUG
-  initDebugUI() {
-    const folder = this.debugGui.addFolder('TV');
-
-    const lookAtFolder = folder.addFolder('Camera Target');
-    lookAtFolder.add(this.lookAtPosition, 'x', -15, 20, 0.000001).name('Position X');
-    lookAtFolder.add(this.lookAtPosition, 'y', -15, 20, 0.000001).name('Position Y');
-    lookAtFolder.add(this.lookAtPosition, 'z', -15, 20, 0.000001).name('Position Z');
-
-    const lightFolder = folder.addFolder('Lights');
-
-    lightFolder
-      .add(appState, 'tvIsDaylight')
-      .name('IsDaylight')
-      .onChange(() => this.toggleLights());
-
-    lightFolder.add(this.material, 'emissiveIntensity', 0, 1, 0.001);
-    lightFolder.addLight('Ambient Light', this.tvAmbient);
-    lightFolder.addLight('Point Light', this.pointLight);
-
-    const tvFolder = folder.addFolder('TV Model');
-    tvFolder.add(this.tvModel.position, 'x', -15, 15, 0.000001).name('Model X');
-    tvFolder.add(this.tvModel.position, 'y', -15, 15, 0.000001).name('Model Y');
-    tvFolder.add(this.tvModel.position, 'z', -15, 15, 0.000001).name('Model Z');
-    tvFolder.add(this.tvModel.rotation, 'x', -15, 15, 0.000001).name('Rotation X');
-    tvFolder.add(this.tvModel.rotation, 'y', -15, 15, 0.000001).name('Rotation Y');
-    tvFolder.add(this.tvModel.rotation, 'z', -15, 15, 0.000001).name('Rotation Z');
-  }
-  /// #endif
 }
 
 export { TV };

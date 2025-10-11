@@ -7,14 +7,12 @@ import { ASPECT_RATIOS } from '../constants';
 class Flashlight {
   isLargeLight;
   spotLight;
-  debugGui;
   ambient;
   scene;
 
   isActive;
 
-  constructor(scene, ambient, aspectRatio, debugGui) {
-    this.debugGui = debugGui;
+  constructor(scene, ambient, aspectRatio) {
     this.ambient = ambient;
     this.scene = scene;
 
@@ -31,9 +29,6 @@ class Flashlight {
     this.toggle(false);
 
     this.initUI();
-    /// #if DEBUG
-    this.initDebugUI();
-    /// #endif
   }
 
   toggle(isActive) {
@@ -168,21 +163,6 @@ class Flashlight {
 
     window.addEventListener('resize', this.initCursorDrag.bind(this));
   }
-
-  /// #if DEBUG
-  initDebugUI() {
-    const folder = this.debugGui.addFolder('Flashlight');
-    folder.addLight('Spot Light', this.spotLight);
-
-    folder
-      .add(appState, 'flashlightIsLarge')
-      .name('IsLarge')
-      .onChange(() => this.toggle(true));
-
-    folder.add(this.lightParams, 'x', -50, 50, 0.1).name('X');
-    folder.add(this.lightParams, 'y', -30, 30, 0.1).name('Y');
-  }
-  /// #endif
 }
 
 export { Flashlight };

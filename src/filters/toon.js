@@ -10,15 +10,13 @@ const Utils = {
 };
 
 class Toon {
-  debugGui;
   uniforms;
   toonNeighbour;
   toonEdges;
   invert;
   isActive;
 
-  constructor(uniforms, plane, aspectRatio, debugGui) {
-    this.debugGui = debugGui;
+  constructor(uniforms, plane, aspectRatio) {
     this.uniforms = uniforms;
     this.plane = plane;
 
@@ -35,9 +33,6 @@ class Toon {
 
     this.setupToon();
     this.initUI();
-    /// #if DEBUG
-    this.initDebugUI();
-    /// #endif
   }
 
   setupToon() {
@@ -153,54 +148,6 @@ class Toon {
     this.lastButton ? this.lastButton.click() : this.colorBtn.click();
     toonAudio();
   }
-
-  /// #if DEBUG
-  initDebugUI() {
-    const folder = this.debugGui.addFolder('Toon');
-    folder
-      .add(appState, 'toonMode', {
-        Contours: TOON_MODES.Contours,
-        Inverse: TOON_MODES.Inverse,
-        Color: TOON_MODES.Color,
-      })
-      .name('Toon Mode')
-      .onChange((toonMode) => this.setToonMode(toonMode));
-
-    folder
-      .add(this, 'isColors')
-      .name('Colors')
-      .onChange(() => this.update());
-
-    folder
-      .add(this, 'isContours')
-      .name('Contours')
-      .onChange(() => this.update());
-
-    folder
-      .add(this, 'isInverse')
-      .name('Inverse')
-      .onChange(() => this.update());
-
-    folder.add(this, 'toonExposure', -0.5, 1, 0.01).onChange(() => this.update());
-    folder.add(this, 'toonContrast', -0.5, 1, 0.01).onChange(() => this.update());
-    folder.add(this, 'toonBrightness', -0.5, 1, 0.01).onChange(() => this.update());
-    folder.add(this, 'contourStrength', 0.01, 1.0, 0.00001).onChange(() => this.update());
-
-    folder
-      .add(this.contourColor, 'r', 0, 1, 0.01)
-      .name('Contour Red')
-      .onChange(() => this.update());
-    folder
-      .add(this.contourColor, 'g', 0, 1, 0.01)
-      .name('Contour Green')
-      .onChange(() => this.update());
-
-    folder
-      .add(this.contourColor, 'b', 0, 1, 0.01)
-      .name('Contour Blue')
-      .onChange(() => this.update());
-  }
-  /// #endif
 }
 
 export { Toon };

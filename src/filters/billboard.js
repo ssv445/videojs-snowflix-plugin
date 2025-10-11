@@ -26,7 +26,6 @@ class Billboard {
   billboard;
   spotLights;
   uniforms;
-  debugGui;
   material;
   mixers;
   camera;
@@ -44,7 +43,7 @@ class Billboard {
   isActive;
   reset;
 
-  constructor(uniforms, scene, plane, projectAmbient, loaders, camera, debugGui) {
+  constructor(uniforms, scene, plane, projectAmbient, loaders, camera) {
     this.isSpinning = false;
     this.isReverse = true;
     this.isActive = false;
@@ -54,7 +53,6 @@ class Billboard {
     this.prismCount = PRISM_COUNTS[1];
     this.material = plane.material;
     this.uniforms = uniforms;
-    this.debugGui = debugGui;
     this.camera = camera;
     this.plane = plane;
     this.scene = scene;
@@ -156,9 +154,6 @@ class Billboard {
     this.setupLights();
     this.initUI();
     this.toggle(false);
-    /// #if DEBUG
-    this.initDebugUI();
-    /// #endif
 
     this.animation = prismData.animations[0];
     this.prism = prismData.scene.children[0];
@@ -456,49 +451,6 @@ class Billboard {
         break;
     }
   }
-
-  /// #if DEBUG
-  initDebugUI() {
-    const folder = this.debugGui.addFolder('Billboard');
-    folder
-      .add(appState, 'billboardIsDayLight')
-      .name('isDayLight')
-      .onChange(() => this.toggleLights());
-
-    folder.add(this, 'clean').name('Reset');
-    folder.add(this, 'playAnimation').name('Spin');
-    folder.add(this, 'prismCount', 6, 15, 1).name('Prism Count');
-
-    folder
-      .add(this, 'animationDirection', {
-        Forwards: DIRECTIONS.Forwards,
-        Backwards: DIRECTIONS.Backwards,
-        PingPong: DIRECTIONS.PingPong,
-      })
-      .name('Direction')
-      .onChange((value) => {
-        this.animationDirection = parseInt(value);
-      });
-
-    folder.add(this, 'animationInterval', 1000, 30000, 1).name('Event Frequency');
-    folder.add(this, 'animationDuration', 0, 3, 0.01).name('Speed Rotation');
-    folder.add(this, 'animationDelay', 0, 500, 1).name('Prism Overlap');
-
-    folder
-      .add(this, 'emissiveIntensity', 0, 1, 0.01)
-      .name('Emissive')
-      .onChange(() => this.setEmissive());
-
-    const lightFolder = folder.addFolder('Lights');
-
-    lightFolder.addLight('Ambient', this.ambient);
-    lightFolder.addLight('Spot Light', this.spotLight);
-
-    const nightLights = lightFolder.addFolder('Night Lights');
-    nightLights.addLight('Night Light 1', this.nightLight_1);
-    nightLights.addLight('Night Light 2', this.nightLight_2);
-  }
-  /// #endif
 }
 
 export { Billboard };
