@@ -7,7 +7,7 @@ import { appState, setAppState, logSnowflix, getUrlParams, setMediaId, setClient
 import { getUserData, saveUserData, saveBrowserData, findAspectRatio, replaceImageSources } from './utils';
 
 import localization from './localization.json';
-import snowflixHtml from './snowflix.html';
+import snowflixHtml from './snowflix.html?raw';
 import './snowflix.css';
 
 // Get videojs from global scope (it's externalized in webpack)

@@ -4,10 +4,11 @@ import { appState, toggleSwitch, toggleSmallSlider, saveUserData, logSnowflix, b
 import { CONSTANTS, DIRECTIONS, PRISM_COUNTS, SPEED_MODES } from '../constants';
 import { injectShaderCode } from '../shaders';
 
-import nightBackground from '../../public/images/night-billboard.jpeg';
-import dayBackground from '../../public/images/day-billboard.jpeg';
-import billboardFile from '../../public/billboard/billboard.glb';
-import prismFile from '../../public/billboard/prism.glb';
+// Vite handles these imports as URLs to the assets
+import nightBackground from '../../public/images/night-billboard.jpeg?url';
+import dayBackground from '../../public/images/day-billboard.jpeg?url';
+import billboardFile from '../../public/billboard/billboard.glb?url';
+import prismFile from '../../public/billboard/prism.glb?url';
 
 // Simple DOM utils
 const Utils = {

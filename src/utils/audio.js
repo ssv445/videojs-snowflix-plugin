@@ -1,5 +1,6 @@
-import slide from '../../public/audio/slide.mp3';
-import click from '../../public/audio/click.mp3';
+// Vite handles these imports as URLs to the assets in dist/assets/audio/
+import slide from '../../public/audio/slide.mp3?url';
+import click from '../../public/audio/click.mp3?url';
 
 import { appState } from './state';
 
