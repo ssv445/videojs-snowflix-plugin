@@ -3,8 +3,8 @@ import Draggable from 'draggable';
 import TWEEN from '@tweenjs/tween.js';
 
 import { CONSTANTS } from '../constants';
-// Vite handles this import as URL to the asset in dist/assets/models/
-import tvFile from '../../public/tv/tv.glb?url';
+// Vite inlines this as base64 data URL in the bundle
+import tvFile from '../../public/tv/tv.glb';
 import { appState, toggleSwitch, tvAudio, saveUserData, logSnowflix, logError } from '../utils';
 
 class TV {

@@ -1,49 +1,49 @@
-// Vite handles these imports as URLs to the assets in dist/assets/images/
-import flashlightBtn from '../../public/images/flashlight-btn.svg?url';
-import poweredByLink from '../../public/images/powered-by-link.svg?url';
-import billboardBtn from '../../public/images/billboard-btn.svg?url';
-import minimizeBtn from '../../public/images/minimize-btn.svg?url';
-import cartoonBtn from '../../public/images/toon-cartoon.svg?url';
-import unmuteBtn from '../../public/images/unmute-btn.svg?url';
-import brightBtn from '../../public/images/toon-bright.svg?url';
-import desatBtn from '../../public/images/desat-btn.svg?url';
-import powerBtn from '../../public/images/power-btn.svg?url';
-import darkBtn from '../../public/images/toon-dark.svg?url';
-import toonBtn from '../../public/images/toon-btn.svg?url';
-import muteBtn from '../../public/images/mute-btn.svg?url';
-import tvBtn from '../../public/images/tv-btn.svg?url';
+// Vite inlines these as base64 data URLs in the bundle (no separate files)
+import flashlightBtn from '../../public/images/flashlight-btn.svg';
+import poweredByLink from '../../public/images/powered-by-link.svg';
+import billboardBtn from '../../public/images/billboard-btn.svg';
+import minimizeBtn from '../../public/images/minimize-btn.svg';
+import cartoonBtn from '../../public/images/toon-cartoon.svg';
+import unmuteBtn from '../../public/images/unmute-btn.svg';
+import brightBtn from '../../public/images/toon-bright.svg';
+import desatBtn from '../../public/images/desat-btn.svg';
+import powerBtn from '../../public/images/power-btn.svg';
+import darkBtn from '../../public/images/toon-dark.svg';
+import toonBtn from '../../public/images/toon-btn.svg';
+import muteBtn from '../../public/images/mute-btn.svg';
+import tvBtn from '../../public/images/tv-btn.svg';
 
-import one from '../../public/images/one.svg?url';
-import two from '../../public/images/two.svg?url';
-import three from '../../public/images/three.svg?url';
-import four from '../../public/images/four.svg?url';
+import one from '../../public/images/one.svg';
+import two from '../../public/images/two.svg';
+import three from '../../public/images/three.svg';
+import four from '../../public/images/four.svg';
 
-import rgbBtn from '../../public/images/rgb-btn.svg?url';
-import rgbGreenBlue from '../../public/images/rgb-green-blue.svg?url';
-import rgbGreenRed from '../../public/images/rgb-green-red.svg?url';
-import rgbRedBlue from '../../public/images/rgb-red-blue.svg?url';
-import rgbBlue from '../../public/images/rgb-blue.svg?url';
-import rgbRed from '../../public/images/rgb-red.svg?url';
-import rgbGreen from '../../public/images/rgb-green.svg?url';
+import rgbBtn from '../../public/images/rgb-btn.svg';
+import rgbGreenBlue from '../../public/images/rgb-green-blue.svg';
+import rgbGreenRed from '../../public/images/rgb-green-red.svg';
+import rgbRedBlue from '../../public/images/rgb-red-blue.svg';
+import rgbBlue from '../../public/images/rgb-blue.svg';
+import rgbRed from '../../public/images/rgb-red.svg';
+import rgbGreen from '../../public/images/rgb-green.svg';
 
-import tv from '../../public/images/tv.svg?url';
-import tvPosition from '../../public/images/tv-position.svg?url';
-import flashlightPosition from '../../public/images/flashlight-position.svg?url';
+import tv from '../../public/images/tv.svg';
+import tvPosition from '../../public/images/tv-position.svg';
+import flashlightPosition from '../../public/images/flashlight-position.svg';
 
-import loader from '../../public/images/loader.gif?url';
+import loader from '../../public/images/loader.gif';
 
-import sun from '../../public/images/sun.svg?url';
-import moon from '../../public/images/moon.svg?url';
-import less from '../../public/images/less.svg?url';
-import more from '../../public/images/more.svg?url';
-import small from '../../public/images/small.svg?url';
-import big from '../../public/images/big.svg?url';
-import slow from '../../public/images/slow.svg?url';
-import fast from '../../public/images/fast.svg?url';
-import desatLess from '../../public/images/desat-less.svg?url';
-import desatMore from '../../public/images/desat-more.svg?url';
-import backgroundOff from '../../public/images/background-off.svg?url';
-import backgroundOn from '../../public/images/background-on.svg?url';
+import sun from '../../public/images/sun.svg';
+import moon from '../../public/images/moon.svg';
+import less from '../../public/images/less.svg';
+import more from '../../public/images/more.svg';
+import small from '../../public/images/small.svg';
+import big from '../../public/images/big.svg';
+import slow from '../../public/images/slow.svg';
+import fast from '../../public/images/fast.svg';
+import desatLess from '../../public/images/desat-less.svg';
+import desatMore from '../../public/images/desat-more.svg';
+import backgroundOff from '../../public/images/background-off.svg';
+import backgroundOn from '../../public/images/background-on.svg';
 
 //*** Export all image URLs for use in the plugin
 export const images = {

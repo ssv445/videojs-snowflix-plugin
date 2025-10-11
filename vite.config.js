@@ -55,31 +55,21 @@ export default defineConfig({
           'draggable': 'Draggable'
         },
 
-        // Keep assets in predictable locations
+        // Keep CSS files at root level
         assetFileNames: (assetInfo) => {
-          // CSS files at root level
           if (assetInfo.name && assetInfo.name.endsWith('.css')) {
             return '[name][extname]';
           }
-
-          // Organize all other assets by type in assets/ subdirectory
-          if (/\.(png|jpe?g|svg|gif|webp|avif)$/i.test(assetInfo.name)) {
-            return `assets/images/[name][extname]`;
-          }
-          if (/\.(mp3|wav|ogg)$/i.test(assetInfo.name)) {
-            return `assets/audio/[name][extname]`;
-          }
-          if (/\.(glb|gltf)$/i.test(assetInfo.name)) {
-            return `assets/models/[name][extname]`;
-          }
-          if (/\.(woff2?|eot|ttf|otf)$/i.test(assetInfo.name)) {
-            return `assets/fonts/[name][extname]`;
-          }
-
+          // All other assets should be inlined, but if any slip through,
+          // put them in assets/ folder (though this shouldn't happen with our config)
           return `assets/[name][extname]`;
         }
       }
     },
+
+    // Inline all assets as base64 data URLs (no separate asset files)
+    // Set to a very high value to ensure everything is inlined
+    assetsInlineLimit: 100000000, // 100MB - effectively inline everything
 
     // Adjust chunk size warning limit for video plugin
     chunkSizeWarningLimit: 1000,

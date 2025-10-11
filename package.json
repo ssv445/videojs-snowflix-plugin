@@ -10,8 +10,7 @@
     ".": {
       "import": "./dist/videojs-snowflix.js"
     },
-    "./dist/*.css": "./dist/*.css",
-    "./dist/assets/*": "./dist/assets/*"
+    "./dist/*.css": "./dist/*.css"
   },
   "repository": {
     "type": "git",
@@ -45,7 +44,9 @@
   ],
   "license": "SEE LICENSE IN LICENSE",
   "files": [
-    "dist",
+    "dist/videojs-snowflix.js",
+    "dist/videojs-snowflix.js.map",
+    "dist/videojs-snowflix.css",
     "LICENSE",
     "README.md"
   ],
