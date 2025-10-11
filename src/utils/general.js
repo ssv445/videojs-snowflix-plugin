@@ -1,17 +1,17 @@
 import { ASPECT_RATIOS } from '../constants';
 import { saveLogData, clientId, mediaId } from './index';
+import { isDebugEnabled } from './logger';
 
 export const logSnowflix = (event, value) => {
   saveLogData({ event, value, mediaid: mediaId, clientid: clientId, timestamp: Date.now() });
 
-  /// #if DEBUG
-  let message = `%cSnowflixLog: ${event} `;
-  if (value !== undefined) {
-    message += JSON.stringify(value);
+  if (isDebugEnabled()) {
+    let message = `%cSnowflixLog: ${event} `;
+    if (value !== undefined) {
+      message += JSON.stringify(value);
+    }
+    console.log(message, 'color: orange;');
   }
-
-  console.log(message, 'color: orange;');
-  /// #endif
 };
 
 export const getUrlParams = () => {
