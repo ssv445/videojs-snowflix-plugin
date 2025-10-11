@@ -79,8 +79,8 @@
         crossorigin="anonymous"
       >
         <source
-          src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
-          type="video/mp4"
+          src="https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8"
+          type="application/x-mpegURL"
         />
         <p class="vjs-no-js">
           To view this video please enable JavaScript, and consider upgrading to a
@@ -121,6 +121,9 @@
   <!-- Video.js Library -->
   <script src="https://vjs.zencdn.net/8.10.0/video.min.js"></script>
 
+  <!-- Video.js HTTP Streaming (HLS support) -->
+  <script src="https://unpkg.com/@videojs/http-streaming@3.13.4/dist/videojs-http-streaming.min.js"></script>
+
   <!-- Snowflix Plugin (will be bundled by webpack) -->
   <script src="videojs-snowflix.js"></script>
 
@@ -130,6 +133,14 @@
       controls: true,
       fluid: false,
       aspectRatio: '16:9',
+      html5: {
+        vhs: {
+          overrideNative: true
+        },
+        nativeVideoTracks: false,
+        nativeAudioTracks: false,
+        nativeTextTracks: false
+      }
     });
 
     // Initialize Snowflix plugin
@@ -141,6 +152,12 @@
     // Log player ready
     player.ready(function() {
       console.log('Video.js player is ready with Snowflix plugin!');
+      console.log('HLS stream URL:', player.currentSrc());
+    });
+
+    // Log any errors
+    player.on('error', function(err) {
+      console.error('Video.js error:', err);
     });
   </script>
 </body>

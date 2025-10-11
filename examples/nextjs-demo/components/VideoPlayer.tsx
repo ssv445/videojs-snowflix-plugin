@@ -41,11 +41,15 @@ export default function VideoPlayer({
         (window as any).videojs = videojs;
       }
 
-      import('videojs-snowflix').then(() => {
-        console.log('Snowflix plugin module loaded');
+      // Load HLS support first, then Snowflix plugin
+      Promise.all([
+        import('@videojs/http-streaming'),
+        import('videojs-snowflix')
+      ]).then(() => {
+        console.log('HLS support and Snowflix plugin modules loaded');
         setPluginLoaded(true);
       }).catch((err) => {
-        console.error('Failed to load Snowflix plugin:', err);
+        console.error('Failed to load plugins:', err);
       });
     }
   }, [pluginLoaded]);

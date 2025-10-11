@@ -16,11 +16,19 @@ export default function Home() {
     controls: true,
     responsive: true,
     fluid: true,
+    html5: {
+      vhs: {
+        overrideNative: true
+      },
+      nativeVideoTracks: false,
+      nativeAudioTracks: false,
+      nativeTextTracks: false
+    },
     sources: [
       {
-        // Using CORS-enabled video from Wikimedia Commons
-        src: 'https://upload.wikimedia.org/wikipedia/commons/transcoded/c/c0/Big_Buck_Bunny_4K.webm/Big_Buck_Bunny_4K.webm.720p.vp9.webm',
-        type: 'video/webm',
+        // Using HLS test stream from Mux (CORS-enabled)
+        src: 'https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8',
+        type: 'application/x-mpegURL',
       },
     ],
   };
