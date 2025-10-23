@@ -1,5 +1,4 @@
 node_modules/*
-dist/*
 examples/nextjs-demo/node_modules/
 examples/nextjs-demo/.next/
 examples/nextjs-demo/package-lock.json
