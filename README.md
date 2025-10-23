@@ -4,10 +4,6 @@ Accessibility plugin for Video.js providing visual effect filters for enhanced v
 
 ## Installation
 
-```bash
-npm install videojs-snowflix video.js
-```
-
 The package includes:
 - **UMD build**: `dist/videojs-snowflix.min.js` (for browsers and CommonJS)
 - **ESM build**: `dist/videojs-snowflix.esm.js` (for modern bundlers like Webpack, Vite, Rollup)
@@ -235,11 +231,9 @@ A complete Next.js 15 demo application is available in the [`examples/nextjs-dem
 
 ```bash
 cd examples/nextjs-demo
-npm install
-npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) to see the plugin in action with a sample video.
+Open the demo to see the plugin in action with a sample video.
 
 The demo includes:
 - Full Next.js 15 App Router integration
@@ -251,21 +245,6 @@ The demo includes:
 ## Development
 
 ### Building from Source
-
-```bash
-# Clone the repository
-git clone https://github.com/ssv445/videojs-snowflix-plugin.git
-cd videojs-snowflix-plugin
-
-# Install dependencies
-npm install
-
-# Development server (localhost:9000)
-npm run dev
-
-# Production build
-npm run build
-```
 
 Output files are generated in the `dist/` folder:
 - `dist/videojs-snowflix.min.js` (~1.3MB) - UMD bundle
@@ -330,6 +309,5 @@ See [LICENSE](LICENSE) file for details.
 ## Links
 
 - [Snowflix Website](https://www.snowflixtv.com/)
-- [npm Package](https://www.npmjs.com/package/videojs-snowflix)
 - [GitHub Repository](https://github.com/ssv445/videojs-snowflix-plugin)
 - [Video.js Docs](https://videojs.com/)

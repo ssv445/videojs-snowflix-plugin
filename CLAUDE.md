@@ -10,14 +10,6 @@ This is a Video.js plugin that ports the Snowflix accessibility plugin from Kalt
 
 ### Development Commands
 
-```bash
-# Start development server on http://localhost:9000
-npm run dev
-
-# Production build (creates both UMD and ESM bundles)
-npm run build
-```
-
 The build system uses Webpack with three configurations:
 - `webpack.common.js` - Shared configuration for both builds
 - `webpack.dev.js` - Development server with hot reload on port 9000
