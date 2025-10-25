@@ -215,28 +215,52 @@ class SnowflixPlugin extends Plugin {
   calculateInitialPosition(floatPosition, element) {
     const viewportWidth = window.innerWidth;
     const viewportHeight = window.innerHeight;
-    const elementWidth = element.offsetWidth || 370; // fallback to max-width
-    const elementHeight = element.offsetHeight || 180; // fallback to min-height
+
+    // Get actual element dimensions, with responsive fallbacks based on media queries
+    let elementWidth = element.offsetWidth;
+    let elementHeight = element.offsetHeight;
+
+    // If element hasn't been rendered yet, estimate dimensions based on viewport
+    if (!elementWidth || !elementHeight) {
+      // Width: max-width 370px below 520px, 500px above 520px
+      elementWidth = viewportWidth >= 520 ? 500 : 370;
+
+      // Height: varies by viewport width (see CSS media queries)
+      if (viewportWidth >= 520) {
+        elementHeight = 280;
+      } else if (viewportWidth >= 360) {
+        elementHeight = 210;
+      } else if (viewportWidth >= 330) {
+        elementHeight = 190;
+      } else {
+        elementHeight = 180;
+      }
+    }
+
+    // Margins: 3% from top, 5% from sides, 2.5% from bottom
+    const topMargin = viewportHeight * 0.03;
+    const sideMargin = viewportWidth * 0.05;
+    const bottomMargin = viewportHeight * 0.03; // Increased from 2.5% to prevent cutoff
 
     // Default position (bottom-right with margins)
-    let top = viewportHeight - elementHeight - (viewportHeight * 0.025);
-    let left = viewportWidth - elementWidth - (viewportWidth * 0.05);
+    let top = viewportHeight - elementHeight - bottomMargin;
+    let left = viewportWidth - elementWidth - sideMargin;
 
     switch (floatPosition) {
       case 'top-right':
-        top = viewportHeight * 0.03;
-        left = viewportWidth - elementWidth - (viewportWidth * 0.05);
+        top = topMargin;
+        left = viewportWidth - elementWidth - sideMargin;
         break;
       case 'top-left':
-        top = viewportHeight * 0.03;
-        left = viewportWidth * 0.05;
+        top = topMargin;
+        left = sideMargin;
         break;
       case 'bottom-left':
-        top = viewportHeight - elementHeight - (viewportHeight * 0.025);
-        left = viewportWidth * 0.05;
+        top = viewportHeight - elementHeight - bottomMargin;
+        left = sideMargin;
         break;
       case 'bottom-center':
-        top = viewportHeight - elementHeight - (viewportHeight * 0.025);
+        top = viewportHeight - elementHeight - bottomMargin;
         left = (viewportWidth - elementWidth) / 2;
         break;
       case 'bottom-right':
@@ -348,6 +372,12 @@ class SnowflixPlugin extends Plugin {
       logDebug('Setting initial UI position from config:', floatPosition);
       const initialPosition = this.calculateInitialPosition(floatPosition, this.snowflixUI);
       this.applyUIPosition(initialPosition.top, initialPosition.left);
+
+      // Recalculate position after a brief delay to ensure element is fully rendered
+      setTimeout(() => {
+        const refinedPosition = this.calculateInitialPosition(floatPosition, this.snowflixUI);
+        this.applyUIPosition(refinedPosition.top, refinedPosition.left);
+      }, 100);
     }
 
     // Add window resize handler to maintain position within viewport boundaries
