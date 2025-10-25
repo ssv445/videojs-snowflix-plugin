@@ -250,9 +250,6 @@ class SnowflixPlugin extends Plugin {
     this.minimizeBtn.addEventListener('click', this.clickMinimize.bind(this));
     this.muteBtn.addEventListener('click', this.clickMute.bind(this));
 
-    // Create unminimize button
-    this.createUnminimizeButton();
-
     this.backgroundOff = document.getElementById('snowflix-background-off');
     this.backgroundOn = document.getElementById('snowflix-background-on');
     document.querySelector('.snowflix-power-container').addEventListener('click', this.clickPower.bind(this));
@@ -350,23 +347,6 @@ class SnowflixPlugin extends Plugin {
     this.snowflixUI.addEventListener('touchmove', drag);
   }
 
-  createUnminimizeButton() {
-    // Create a floating toggle button with Snowflix power icon
-    this.toggleBtn = Utils.Dom.createElement('div');
-    this.toggleBtn.className = 'snowflix-toggle-btn';
-    this.toggleBtn.innerHTML = `
-      <svg viewBox="0 0 107 114" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path fill-rule="evenodd" clip-rule="evenodd" d="M44.6472 0.967993L102.704 35.0182C107.257 37.6886 107.303 44.2551 102.787 46.9888L44.7308 82.1374C40.0872 84.9487 34.1545 81.6052 34.1545 76.1769V6.97822C34.1545 1.59331 40.0023 -1.75628 44.6472 0.967993ZM43.2889 113.163C19.3811 113.163 0 93.7824 0 69.8746C0 56.3845 6.17059 44.3357 15.8432 36.3966C18.4417 34.2639 22.2114 34.9833 24.2698 37.6411C26.7483 40.8413 25.7158 45.4858 22.7807 48.2732C17.0661 53.7004 13.503 61.3714 13.503 69.8746C13.503 86.3249 26.8386 99.6605 43.2889 99.6605C56.13 99.6605 67.0732 91.5347 71.257 80.1445C72.6919 76.238 76.7478 73.3965 80.7314 74.6011C83.8246 75.5364 85.8186 78.6164 84.9357 81.7251C79.7821 99.8719 63.0877 113.163 43.2889 113.163ZM44.419 10.7944C45.381 9.12809 47.5117 8.55717 49.178 9.51921L96.6452 36.9244C96.9245 37.0789 97.1844 37.2729 97.4157 37.5038C97.721 37.8078 97.9621 38.1615 98.1335 38.544C98.34 39.002 98.4393 39.486 98.4398 39.9647C98.4412 40.4513 98.3405 40.9435 98.1292 41.4088C97.9594 41.7845 97.7223 42.1322 97.4231 42.4319C97.1898 42.6662 96.9273 42.8627 96.6449 43.0189L49.178 70.4239C47.5117 71.386 45.381 70.8151 44.419 69.1488C43.457 67.4825 44.0279 65.3518 45.6942 64.3897L87.9877 39.9716L45.6942 15.5534C44.0279 14.5914 43.457 12.4607 44.419 10.7944Z"/>
-      </svg>
-    `;
-    this.toggleBtn.title = 'Toggle Snowflix UI';
-    this.toggleBtn.addEventListener('click', () => {
-      this.clickMinimize(); // Toggle minimize/unminimize
-    });
-
-    // Append to the snowflix root
-    Utils.Dom.appendChild(this.snowflixRoot, this.toggleBtn);
-  }
 
   addControlBarButton() {
     // Create a custom Video.js Button component
@@ -599,15 +579,6 @@ class SnowflixPlugin extends Plugin {
     setTimeout(() => {
       const addClass = appState.isMinimized ? CONSTANTS.DISABLED_CLASS : CONSTANTS.ACTIVE_CLASS;
       Utils.Dom.addClassName(this.snowflixUI, addClass);
-
-      // Update toggle button class for animation
-      if (this.toggleBtn) {
-        if (appState.isMinimized) {
-          Utils.Dom.addClassName(this.toggleBtn, 'minimized');
-        } else {
-          Utils.Dom.removeClassName(this.toggleBtn, 'minimized');
-        }
-      }
 
       // Update control bar button icon
       if (this.controlBarButton) {

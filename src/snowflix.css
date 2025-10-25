@@ -901,62 +901,6 @@
   }
 }
 
-/* Toggle button - floating button to minimize/unminimize UI */
-.snowflix-toggle-btn {
-  position: fixed !important;
-  bottom: 20px !important;
-  right: 20px !important;
-  width: 60px !important;
-  height: 60px !important;
-  border-radius: 50% !important;
-  background: linear-gradient(135deg, #00c9ea 0%, #1287a8 100%) !important;
-  box-shadow: 0 4px 15px rgba(0, 201, 234, 0.4), 0 2px 8px rgba(0, 0, 0, 0.3) !important;
-  cursor: pointer !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  z-index: 9999999999 !important;
-  transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55) !important;
-  border: 2px solid rgba(255, 255, 255, 0.2) !important;
-}
-
-.snowflix-toggle-btn svg {
-  width: 32px !important;
-  height: 32px !important;
-  fill: #ffffff !important;
-  pointer-events: none !important;
-  transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55) !important;
-}
-
-.snowflix-toggle-btn:hover {
-  transform: scale(1.1) rotate(15deg) !important;
-  box-shadow: 0 6px 20px rgba(0, 201, 234, 0.6), 0 3px 10px rgba(0, 0, 0, 0.4) !important;
-  background: linear-gradient(135deg, #1287a8 0%, #00c9ea 100%) !important;
-}
-
-.snowflix-toggle-btn:active {
-  transform: scale(0.95) rotate(0deg) !important;
-}
-
-/* When minimized, rotate the icon */
-.snowflix-toggle-btn.minimized svg {
-  transform: rotate(180deg) !important;
-}
-
-/* Pulse animation when minimized to draw attention */
-@keyframes pulse-glow {
-  0%, 100% {
-    box-shadow: 0 4px 15px rgba(0, 201, 234, 0.4), 0 2px 8px rgba(0, 0, 0, 0.3) !important;
-  }
-  50% {
-    box-shadow: 0 6px 25px rgba(0, 201, 234, 0.7), 0 3px 12px rgba(0, 0, 0, 0.4) !important;
-  }
-}
-
-.snowflix-toggle-btn.minimized {
-  animation: pulse-glow 2s ease-in-out infinite !important;
-}
-
 /* Video.js control bar button for Snowflix */
 .vjs-snowflix-button.vjs-control.vjs-button {
   cursor: pointer !important;
