@@ -1858,7 +1858,7 @@ class SnowflixPlugin extends Plugin {
       targetElement = document.body;
     }
     Utils.Dom.appendChild(targetElement, this.snowflixRoot);
-    this.snowflixUI = this.snowflixRoot.childNodes[2];
+    this.snowflixUI = this.snowflixRoot.querySelector(".snowflix-ui");
     const listen = (button, containerSelector, sceneType) => {
       const container = document.getElementById(containerSelector);
       button.addEventListener("click", this.clickFilter.bind(this, button, container, sceneType));

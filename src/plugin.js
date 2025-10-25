@@ -289,7 +289,7 @@ class SnowflixPlugin extends Plugin {
     }
 
     Utils.Dom.appendChild(targetElement, this.snowflixRoot);
-    this.snowflixUI = this.snowflixRoot.childNodes[2];
+    this.snowflixUI = this.snowflixRoot.querySelector('.snowflix-ui');
 
     const listen = (button, containerSelector, sceneType) => {
       const container = document.getElementById(containerSelector);
