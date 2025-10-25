@@ -25,7 +25,6 @@
   top: 0 !important;
 }
 
-.snowflix-loader,
 .snowflix-ui {
   -webkit-transition: opacity 0.2s ease-out !important;
   -moz-transition: opacity 0.2s ease-out !important;
@@ -43,23 +42,11 @@
   /* Position will be set dynamically via JavaScript */
 }
 
-.snowflix-loader {
-  justify-content: center !important;
-  pointer-events: none !important;
-  align-items: center !important;
-  display: flex !important;
-}
-
-.snowflix-loader img {
-  height: 25% !important;
-}
-
 .snowflix-ui.snowflix-disabled {
   display: none !important;
 }
 
 .snowflix-root:not(.snowflix-active) .snowflix-ui,
-.snowflix-root.snowflix-active .snowflix-loader,
 .snowflix-ui:not(.snowflix-active) {
   opacity: 0 !important;
 }
@@ -79,7 +66,6 @@
 .snowflix-ui .snowflix-power-container,
 .snowflix-ui .snowflix-subtitle,
 .snowflix-ui .snowflix-footer,
-.snowflix-ui .snowflix-loader,
 .snowflix-ui .snowflix-title,
 .snowflix-ui {
   z-index: 9999999999 !important;
@@ -746,14 +732,12 @@
 }
 
 @media (min-width: 330px) {
-  .snowflix-loader,
   .snowflix-ui {
     min-height: 190px !important;
   }
 }
 
 @media (min-width: 360px) {
-  .snowflix-loader,
   .snowflix-ui {
     min-height: 210px !important;
   }
@@ -793,7 +777,6 @@
 }
 
 @media (min-width: 520px), (orientation: landscape) {
-  .snowflix-loader,
   .snowflix-ui {
     max-width: initial !important;
     margin: initial !important;
