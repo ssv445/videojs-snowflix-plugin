@@ -226,6 +226,7 @@
   display: inline-flex !important;
   min-height: 20px !important;
   margin: 0 4px !important;
+  cursor: pointer !important;
 }
 
 .snowflix-ui .snowflix-minimize-container .snowflix-icon-container,
