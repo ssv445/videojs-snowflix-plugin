@@ -35,4 +35,5 @@ export let appState = {
   desatIndex: 3,
   toonMode: TOON_MODES.Color,
   rgbMode: RGB_MODES.Default,
+  uiPosition: null, // { top: number, left: number } - absolute viewport position in pixels
 };

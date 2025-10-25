@@ -32,18 +32,15 @@
   transition: opacity 0.2s ease-out !important;
   flex-direction: column !important;
   align-items: center !important;
-  position: absolute !important;
+  position: fixed !important;
   user-select: none !important;
   min-height: 180px !important;
   max-width: 370px !important;
   overflow: hidden !important;
   display: flex !important;
-  margin: auto !important;
-  bottom: 2.5% !important;
   height: 28% !important;
   width: 100% !important;
-  right: 0 !important;
-  left: 0 !important;
+  /* Position will be set dynamically via JavaScript */
 }
 
 .snowflix-loader {
@@ -881,24 +878,8 @@
     height: 90% !important;
   }
 
-  .snowflix-ui.bottom-center {
-    transform: translate(-50%, 0) !important;
-    left: 50% !important;
-  }
-
-  .snowflix-ui.bottom-left {
-    left: 5% !important;
-  }
-
-  .snowflix-ui.top-right {
-    right: 5% !important;
-    top: 3% !important;
-  }
-
-  .snowflix-ui.top-left {
-    left: 5% !important;
-    top: 3% !important;
-  }
+  /* Legacy position classes - now handled dynamically via JavaScript */
+  /* Position is set via inline styles based on config and saved state */
 }
 
 /* Video.js control bar button for Snowflix */

@@ -206,6 +206,72 @@ class SnowflixPlugin extends Plugin {
     setClientId(this.urlParams.clientId);
   }
 
+  /**
+   * Calculate initial UI position from config option
+   * @param {string} floatPosition - Position string ('top-right', 'top-left', 'bottom-left', 'bottom-center')
+   * @param {HTMLElement} element - The UI element to position
+   * @returns {Object} Position object with top and left in pixels
+   */
+  calculateInitialPosition(floatPosition, element) {
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+    const elementWidth = element.offsetWidth || 370; // fallback to max-width
+    const elementHeight = element.offsetHeight || 180; // fallback to min-height
+
+    // Default position (bottom-right with margins)
+    let top = viewportHeight - elementHeight - (viewportHeight * 0.025);
+    let left = viewportWidth - elementWidth - (viewportWidth * 0.05);
+
+    switch (floatPosition) {
+      case 'top-right':
+        top = viewportHeight * 0.03;
+        left = viewportWidth - elementWidth - (viewportWidth * 0.05);
+        break;
+      case 'top-left':
+        top = viewportHeight * 0.03;
+        left = viewportWidth * 0.05;
+        break;
+      case 'bottom-left':
+        top = viewportHeight - elementHeight - (viewportHeight * 0.025);
+        left = viewportWidth * 0.05;
+        break;
+      case 'bottom-center':
+        top = viewportHeight - elementHeight - (viewportHeight * 0.025);
+        left = (viewportWidth - elementWidth) / 2;
+        break;
+      case 'bottom-right':
+      default:
+        // Already set as default above
+        break;
+    }
+
+    return { top: Math.round(top), left: Math.round(left) };
+  }
+
+  /**
+   * Apply position to UI element with viewport boundary constraints
+   * @param {number} top - Top position in pixels
+   * @param {number} left - Left position in pixels
+   */
+  applyUIPosition(top, left) {
+    if (!this.snowflixUI) return;
+
+    const viewportWidth = window.innerWidth;
+    const viewportHeight = window.innerHeight;
+    const elementWidth = this.snowflixUI.offsetWidth;
+    const elementHeight = this.snowflixUI.offsetHeight;
+
+    // Constrain to viewport boundaries
+    const constrainedTop = Math.max(0, Math.min(viewportHeight - elementHeight, top));
+    const constrainedLeft = Math.max(0, Math.min(viewportWidth - elementWidth, left));
+
+    this.snowflixUI.style.top = `${constrainedTop}px`;
+    this.snowflixUI.style.left = `${constrainedLeft}px`;
+
+    // Update appState
+    appState.uiPosition = { top: constrainedTop, left: constrainedLeft };
+  }
+
   initUI() {
     this.snowflixRoot = Utils.Dom.createElement('div');
     this.snowflixRoot.innerHTML = snowflixHtml;
@@ -269,82 +335,38 @@ class SnowflixPlugin extends Plugin {
 
     Utils.Dom.addClassName(this.snowflixUI, CONSTANTS.DISABLED_CLASS);
     logDebug('defaultConfig', this.defaultConfig);
-    if (this.defaultConfig?.float) {
-      Utils.Dom.addClassName(this.snowflixUI, this.defaultConfig.float);
+
+    // Set initial UI position
+    // Priority: 1. Saved position from appState, 2. Config float option, 3. Default (bottom-right)
+    if (appState.uiPosition && appState.uiPosition.top !== null && appState.uiPosition.left !== null) {
+      // Restore saved position
+      logDebug('Restoring saved UI position:', appState.uiPosition);
+      this.applyUIPosition(appState.uiPosition.top, appState.uiPosition.left);
+    } else {
+      // Calculate from config or use default
+      const floatPosition = this.defaultConfig?.float || 'bottom-right';
+      logDebug('Setting initial UI position from config:', floatPosition);
+      const initialPosition = this.calculateInitialPosition(floatPosition, this.snowflixUI);
+      this.applyUIPosition(initialPosition.top, initialPosition.left);
     }
 
-    // Make UI draggable
-    this.initDraggableUI();
+    // Add window resize handler to maintain position within viewport boundaries
+    this.initResizeHandler();
   }
 
-  initDraggableUI() {
-    let isDragging = false;
-    let currentX;
-    let currentY;
-    let initialX;
-    let initialY;
-    let xOffset = 0;
-    let yOffset = 0;
-
-    const dragStart = (e) => {
-      // Only allow dragging from the title area
-      if (e.target.closest('.snowflix-title')) {
-        initialX = e.clientX - xOffset;
-        initialY = e.clientY - yOffset;
-
-        if (e.type === 'touchstart') {
-          initialX = e.touches[0].clientX - xOffset;
-          initialY = e.touches[0].clientY - yOffset;
-        }
-
-        isDragging = true;
-        this.snowflixUI.style.cursor = 'grabbing';
+  initResizeHandler() {
+    // Handle window resize to maintain position within viewport boundaries
+    const handleResize = () => {
+      if (appState.uiPosition) {
+        // Reapply current position with new viewport boundaries
+        this.applyUIPosition(appState.uiPosition.top, appState.uiPosition.left);
       }
     };
 
-    const dragEnd = () => {
-      initialX = currentX;
-      initialY = currentY;
-      isDragging = false;
-      this.snowflixUI.style.cursor = '';
-    };
+    window.addEventListener('resize', handleResize);
 
-    const drag = (e) => {
-      if (isDragging) {
-        e.preventDefault();
-
-        if (e.type === 'touchmove') {
-          currentX = e.touches[0].clientX - initialX;
-          currentY = e.touches[0].clientY - initialY;
-        } else {
-          currentX = e.clientX - initialX;
-          currentY = e.clientY - initialY;
-        }
-
-        xOffset = currentX;
-        yOffset = currentY;
-
-        setTranslate(currentX, currentY, this.snowflixUI);
-      }
-    };
-
-    const setTranslate = (xPos, yPos, el) => {
-      el.style.transform = `translate(${xPos}px, ${yPos}px)`;
-    };
-
-    // Add cursor style to title to indicate draggable
-    const titleElement = this.snowflixUI.querySelector('.snowflix-title');
-    if (titleElement) {
-      titleElement.style.cursor = 'grab';
-    }
-
-    // Add event listeners
-    this.snowflixUI.addEventListener('mousedown', dragStart);
-    this.snowflixUI.addEventListener('mouseup', dragEnd);
-    this.snowflixUI.addEventListener('mousemove', drag);
-    this.snowflixUI.addEventListener('touchstart', dragStart);
-    this.snowflixUI.addEventListener('touchend', dragEnd);
-    this.snowflixUI.addEventListener('touchmove', drag);
+    // Store handler for cleanup if needed
+    this.resizeHandler = handleResize;
   }
 
 
