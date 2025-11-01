@@ -1721,6 +1721,10 @@ class SnowflixPlugin extends Plugin {
     this.player.on("ratechange", () => logSnowflix("RATE_CHANGE"));
     this.player.on("seeked", () => logSnowflix("SEEKED"));
     this.player.on("error", () => logSnowflix("ERROR"));
+    this.player.on("dispose", () => {
+      logDebug("Video.js player disposed, cleaning up Snowflix plugin");
+      this.destroy();
+    });
   }
   initRenderer() {
     this.initUI();
@@ -1802,8 +1806,9 @@ class SnowflixPlugin extends Plugin {
    * @returns {Object} Position object with top and left in pixels
    */
   calculateInitialPosition(floatPosition, element) {
-    const viewportWidth = window.innerWidth;
-    const viewportHeight = window.innerHeight;
+    const playerEl = this.player.el();
+    const viewportWidth = playerEl.offsetWidth || window.innerWidth;
+    const viewportHeight = playerEl.offsetHeight || window.innerHeight;
     let elementWidth = element.offsetWidth;
     let elementHeight = element.offsetHeight;
     if (!elementWidth || !elementHeight) {
@@ -1850,8 +1855,9 @@ class SnowflixPlugin extends Plugin {
    */
   applyUIPosition(top, left) {
     if (!this.snowflixUI) return;
-    const viewportWidth = window.innerWidth;
-    const viewportHeight = window.innerHeight;
+    const playerEl = this.player.el();
+    const viewportWidth = playerEl.offsetWidth || window.innerWidth;
+    const viewportHeight = playerEl.offsetHeight || window.innerHeight;
     const elementWidth = this.snowflixUI.offsetWidth;
     const elementHeight = this.snowflixUI.offsetHeight;
     const constrainedTop = Math.max(0, Math.min(viewportHeight - elementHeight, top));
@@ -1870,7 +1876,7 @@ class SnowflixPlugin extends Plugin {
       targetElement = document.getElementById(this.defaultConfig.targetId);
     }
     if (!targetElement) {
-      targetElement = document.body;
+      targetElement = this.player.el();
     }
     Utils.Dom.appendChild(targetElement, this.snowflixRoot);
     this.snowflixUI = this.snowflixRoot.querySelector(".snowflix-ui");
@@ -2208,6 +2214,10 @@ class SnowflixPlugin extends Plugin {
   getCanvasDimensions() {
     const view = this.player.el();
     const video = this.player.el().querySelector("video");
+    if (!video.videoWidth || !video.videoHeight) {
+      logDebug("Video dimensions not yet available");
+      return { width: 0, height: 0, aspectRatio: 0 };
+    }
     const pWidth = parseInt(video.videoWidth / video.videoHeight * view.offsetHeight);
     let dimensions;
     let videoRatio;
@@ -2346,11 +2356,31 @@ class SnowflixPlugin extends Plugin {
       cancelAnimationFrame(this.frameId);
       this.frameId = null;
     }
+    if (this.resizeHandler) {
+      window.removeEventListener("resize", this.resizeHandler);
+      this.resizeHandler = null;
+    }
     this.player.off();
     const videoElement = this.player.el().querySelector("video");
-    Utils.Dom.removeClassName(videoElement, CONSTANTS.VIDEO_CLASS);
+    if (videoElement) {
+      Utils.Dom.removeClassName(videoElement, CONSTANTS.VIDEO_CLASS);
+    }
     if (this.renderer) {
-      Utils.Dom.removeChild(this.player.el(), this.renderer.domElement);
+      const playerEl = this.player.el();
+      if (playerEl) {
+        Utils.Dom.removeChild(playerEl, this.renderer.domElement);
+      }
+      this.renderer.dispose();
+      this.renderer = null;
+    }
+    if (this.texture) {
+      this.texture.dispose();
+      this.texture = null;
+    }
+    if (this.plane) {
+      this.plane.geometry.dispose();
+      this.plane.material.dispose();
+      this.plane = null;
     }
     const video = this.player.el().querySelector("video");
     if (video) {

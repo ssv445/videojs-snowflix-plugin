@@ -31,7 +31,7 @@
   transition: opacity 0.2s ease-out !important;
   flex-direction: column !important;
   align-items: center !important;
-  position: fixed !important;
+  position: absolute !important;
   user-select: none !important;
   min-height: 180px !important;
   max-width: 370px !important;

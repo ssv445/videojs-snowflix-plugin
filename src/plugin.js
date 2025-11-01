@@ -106,6 +106,12 @@ class SnowflixPlugin extends Plugin {
     this.player.on('ratechange', () => logSnowflix('RATE_CHANGE'));
     this.player.on('seeked', () => logSnowflix('SEEKED'));
     this.player.on('error', () => logSnowflix('ERROR'));
+
+    // Clean up when player is destroyed
+    this.player.on('dispose', () => {
+      logDebug('Video.js player disposed, cleaning up Snowflix plugin');
+      this.destroy();
+    });
   }
 
   initRenderer() {
@@ -213,8 +219,10 @@ class SnowflixPlugin extends Plugin {
    * @returns {Object} Position object with top and left in pixels
    */
   calculateInitialPosition(floatPosition, element) {
-    const viewportWidth = window.innerWidth;
-    const viewportHeight = window.innerHeight;
+    // Use player dimensions instead of viewport for proper positioning in both modes
+    const playerEl = this.player.el();
+    const viewportWidth = playerEl.offsetWidth || window.innerWidth;
+    const viewportHeight = playerEl.offsetHeight || window.innerHeight;
 
     // Get actual element dimensions, with responsive fallbacks based on media queries
     let elementWidth = element.offsetWidth;
@@ -280,12 +288,14 @@ class SnowflixPlugin extends Plugin {
   applyUIPosition(top, left) {
     if (!this.snowflixUI) return;
 
-    const viewportWidth = window.innerWidth;
-    const viewportHeight = window.innerHeight;
+    // Use player dimensions for boundary constraints to work in fullscreen
+    const playerEl = this.player.el();
+    const viewportWidth = playerEl.offsetWidth || window.innerWidth;
+    const viewportHeight = playerEl.offsetHeight || window.innerHeight;
     const elementWidth = this.snowflixUI.offsetWidth;
     const elementHeight = this.snowflixUI.offsetHeight;
 
-    // Constrain to viewport boundaries
+    // Constrain to player boundaries
     const constrainedTop = Math.max(0, Math.min(viewportHeight - elementHeight, top));
     const constrainedLeft = Math.max(0, Math.min(viewportWidth - elementWidth, left));
 
@@ -304,12 +314,15 @@ class SnowflixPlugin extends Plugin {
     // Replace all image src attributes with base64 data URLs
     replaceImageSources(this.snowflixRoot);
 
+    // Append to player element so it moves with the player during fullscreen
+    // This ensures the UI is visible in both normal and fullscreen modes
     let targetElement;
     if (this.defaultConfig.targetId) {
       targetElement = document.getElementById(this.defaultConfig.targetId);
     }
     if (!targetElement) {
-      targetElement = document.body;
+      // Append to player element instead of body for fullscreen compatibility
+      targetElement = this.player.el();
     }
 
     Utils.Dom.appendChild(targetElement, this.snowflixRoot);
@@ -716,6 +729,13 @@ class SnowflixPlugin extends Plugin {
   getCanvasDimensions() {
     const view = this.player.el();
     const video = this.player.el().querySelector('video');
+
+    // Check if video dimensions are available
+    if (!video.videoWidth || !video.videoHeight) {
+      logDebug('Video dimensions not yet available');
+      return { width: 0, height: 0, aspectRatio: 0 };
+    }
+
     const pWidth = parseInt((video.videoWidth / video.videoHeight) * view.offsetHeight);
     let dimensions;
     let videoRatio;
@@ -878,14 +898,40 @@ class SnowflixPlugin extends Plugin {
       cancelAnimationFrame(this.frameId);
       this.frameId = null;
     }
+
+    // Remove window resize listener
+    if (this.resizeHandler) {
+      window.removeEventListener('resize', this.resizeHandler);
+      this.resizeHandler = null;
+    }
+
     // Remove all event listeners
     this.player.off();
 
     const videoElement = this.player.el().querySelector('video');
-    Utils.Dom.removeClassName(videoElement, CONSTANTS.VIDEO_CLASS);
+    if (videoElement) {
+      Utils.Dom.removeClassName(videoElement, CONSTANTS.VIDEO_CLASS);
+    }
 
     if (this.renderer) {
-      Utils.Dom.removeChild(this.player.el(), this.renderer.domElement);
+      const playerEl = this.player.el();
+      if (playerEl) {
+        Utils.Dom.removeChild(playerEl, this.renderer.domElement);
+      }
+      // Dispose Three.js renderer
+      this.renderer.dispose();
+      this.renderer = null;
+    }
+
+    // Dispose Three.js resources
+    if (this.texture) {
+      this.texture.dispose();
+      this.texture = null;
+    }
+    if (this.plane) {
+      this.plane.geometry.dispose();
+      this.plane.material.dispose();
+      this.plane = null;
     }
 
     const video = this.player.el().querySelector('video');

@@ -47,6 +47,86 @@
     .info ul {
       line-height: 1.8;
     }
+
+    .test-controls {
+      margin-top: 30px;
+      padding: 20px;
+      background: #2a2a2a;
+      border-radius: 8px;
+    }
+
+    .test-controls h2 {
+      margin-top: 0;
+      color: #4CAF50;
+    }
+
+    .test-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    .test-btn {
+      padding: 10px 20px;
+      font-size: 14px;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      background: #4CAF50;
+      color: white;
+      font-weight: bold;
+      transition: background 0.3s;
+    }
+
+    .test-btn:hover {
+      background: #45a049;
+    }
+
+    .test-btn.danger {
+      background: #f44336;
+    }
+
+    .test-btn.danger:hover {
+      background: #da190b;
+    }
+
+    .test-btn.secondary {
+      background: #2196F3;
+    }
+
+    .test-btn.secondary:hover {
+      background: #0b7dda;
+    }
+
+    #test-status {
+      margin-top: 15px;
+      padding: 10px;
+      background: #1a1a1a;
+      border-radius: 5px;
+      font-family: monospace;
+      font-size: 12px;
+      min-height: 60px;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+
+    .status-log {
+      margin: 5px 0;
+      padding: 5px;
+      border-left: 3px solid #4CAF50;
+      padding-left: 10px;
+    }
+
+    .status-error {
+      border-left-color: #f44336;
+      color: #ff6b6b;
+    }
+
+    .status-info {
+      border-left-color: #2196F3;
+      color: #64b5f6;
+    }
   </style>
 </head>
 <body>
@@ -66,6 +146,18 @@
         <a href="https://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>
       </p>
     </video>
+  </div>
+
+  <div class="test-controls">
+    <h2>🧪 Test Bug Fixes</h2>
+    <div class="test-buttons">
+      <button class="test-btn secondary" id="btn-fullscreen">Test Fullscreen</button>
+      <button class="test-btn secondary" id="btn-canvas-size">Test Canvas Size</button>
+      <button class="test-btn danger" id="btn-destroy">Destroy Player</button>
+      <button class="test-btn" id="btn-recreate">Recreate Player</button>
+      <button class="test-btn secondary" id="btn-clear">Clear Status</button>
+    </div>
+    <div id="test-status"></div>
   </div>
 
   <div class="info">
@@ -96,18 +188,166 @@
   <script type="module">
     import './src/plugin.js';
 
-    // Initialize Video.js player
-    const player = videojs('my-video', {
-      fluid: true,
-      aspectRatio: '16:9'
-    });
+    // Store player globally for tests
+    let player;
 
-    // Initialize Snowflix plugin
-    player.snowflix({
-      lang: 'en'
-    });
+    function initPlayer() {
+      // Initialize Video.js player
+      player = videojs('my-video', {
+        fluid: true,
+        aspectRatio: '16:9'
+      });
 
-    console.log('Video.js Snowflix plugin initialized');
+      // Initialize Snowflix plugin with debug mode
+      player.snowflix({
+        lang: 'en',
+        debug: true
+      });
+
+      console.log('Video.js Snowflix plugin initialized');
+      logStatus('Player initialized with Snowflix plugin', 'info');
+
+      // Store globally for test functions
+      window.testPlayer = player;
+    }
+
+    // Initialize on load
+    initPlayer();
+
+    // Test Functions
+    function logStatus(message, type = 'success') {
+      const statusDiv = document.getElementById('test-status');
+      const timestamp = new Date().toLocaleTimeString();
+      const logClass = type === 'error' ? 'status-error' : (type === 'info' ? 'status-info' : 'status-log');
+      statusDiv.innerHTML += `<div class="${logClass}">[${timestamp}] ${message}</div>`;
+      statusDiv.scrollTop = statusDiv.scrollHeight;
+      console.log(`[TEST] ${message}`);
+    }
+
+    function clearStatus() {
+      document.getElementById('test-status').innerHTML = '';
+    }
+
+    function testFullscreen() {
+      if (!window.testPlayer) {
+        logStatus('Player not initialized', 'error');
+        return;
+      }
+
+      logStatus('Testing fullscreen mode...', 'info');
+
+      if (window.testPlayer.isFullscreen()) {
+        logStatus('Exiting fullscreen...', 'info');
+        window.testPlayer.exitFullscreen();
+        setTimeout(() => {
+          const ui = document.querySelector('.snowflix-ui');
+          logStatus(`UI visible after exit: ${ui ? 'YES' : 'NO'}`, ui ? 'success' : 'error');
+        }, 500);
+      } else {
+        logStatus('Entering fullscreen...', 'info');
+        window.testPlayer.requestFullscreen();
+        setTimeout(() => {
+          const ui = document.querySelector('.snowflix-ui');
+          logStatus(`UI visible in fullscreen: ${ui ? 'YES' : 'NO'}`, ui ? 'success' : 'error');
+          logStatus('Check if Snowflix UI is visible in fullscreen mode', 'info');
+        }, 500);
+      }
+    }
+
+    function testCanvasSize() {
+      if (!window.testPlayer) {
+        logStatus('Player not initialized', 'error');
+        return;
+      }
+
+      logStatus('Testing canvas size calculation...', 'info');
+      const video = window.testPlayer.el().querySelector('video');
+      const canvas = window.testPlayer.el().querySelector('.snowflix-canvas');
+
+      if (!video) {
+        logStatus('Video element not found', 'error');
+        return;
+      }
+
+      logStatus(`Video dimensions: ${video.videoWidth}x${video.videoHeight}`, 'info');
+
+      if (canvas) {
+        logStatus(`Canvas dimensions: ${canvas.width}x${canvas.height}`, 'info');
+        if (canvas.width > 0 && canvas.height > 0) {
+          logStatus('Canvas size calculated successfully', 'success');
+        } else {
+          logStatus('Canvas size is 0 - may still be initializing', 'info');
+        }
+      } else {
+        logStatus('Canvas not found - plugin may not be initialized yet', 'error');
+      }
+    }
+
+    function testPlayerDestroy() {
+      if (!window.testPlayer) {
+        logStatus('Player already destroyed', 'error');
+        return;
+      }
+
+      logStatus('Destroying player...', 'info');
+
+      // Check cleanup
+      const uiBefore = document.querySelector('.snowflix-ui');
+      const canvasBefore = document.querySelector('.snowflix-canvas');
+
+      logStatus(`UI elements before destroy: ${uiBefore ? 'EXISTS' : 'NONE'}`, 'info');
+      logStatus(`Canvas before destroy: ${canvasBefore ? 'EXISTS' : 'NONE'}`, 'info');
+
+      window.testPlayer.dispose();
+      window.testPlayer = null;
+
+      setTimeout(() => {
+        const uiAfter = document.querySelector('.snowflix-ui');
+        const canvasAfter = document.querySelector('.snowflix-canvas');
+
+        if (!uiAfter && !canvasAfter) {
+          logStatus('Cleanup successful - all elements removed', 'success');
+        } else {
+          if (uiAfter) logStatus('WARNING: UI still exists after destroy', 'error');
+          if (canvasAfter) logStatus('WARNING: Canvas still exists after destroy', 'error');
+        }
+      }, 500);
+    }
+
+    function recreatePlayer() {
+      if (window.testPlayer) {
+        logStatus('Player already exists. Destroy it first.', 'error');
+        return;
+      }
+
+      logStatus('Recreating player...', 'info');
+
+      // Recreate video element
+      const container = document.querySelector('.video-container');
+      container.innerHTML = `
+        <video
+          id="my-video"
+          class="video-js vjs-default-skin"
+          controls
+          preload="auto"
+          crossorigin="anonymous"
+        >
+          <source src="https://test-streams.mux.dev/x36xhzz/x36xhzz.m3u8" type="application/x-mpegURL">
+        </video>
+      `;
+
+      setTimeout(() => {
+        initPlayer();
+        logStatus('Player recreated successfully', 'success');
+      }, 100);
+    }
+
+    // Attach event listeners
+    document.getElementById('btn-fullscreen').addEventListener('click', testFullscreen);
+    document.getElementById('btn-canvas-size').addEventListener('click', testCanvasSize);
+    document.getElementById('btn-destroy').addEventListener('click', testPlayerDestroy);
+    document.getElementById('btn-recreate').addEventListener('click', recreatePlayer);
+    document.getElementById('btn-clear').addEventListener('click', clearStatus);
   </script>
 </body>
 </html>
