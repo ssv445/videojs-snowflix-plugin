@@ -395,6 +395,9 @@ class SnowflixPlugin extends Plugin {
 
     // Add window resize handler to maintain position within viewport boundaries
     this.initResizeHandler();
+
+    // Add auto-hide functionality
+    this.initAutoHide();
   }
 
   initResizeHandler() {
@@ -410,6 +413,53 @@ class SnowflixPlugin extends Plugin {
 
     // Store handler for cleanup if needed
     this.resizeHandler = handleResize;
+  }
+
+  initAutoHide() {
+    // Auto-hide the overlay after 3 seconds of inactivity
+    const HIDE_DELAY = 3000; // 3 seconds
+    let hideTimer = null;
+
+    const showOverlay = () => {
+      if (appState.isMinimized) return;
+      this.snowflixUI.style.opacity = '1';
+      this.snowflixUI.style.filter = 'none';
+      this.snowflixUI.style.pointerEvents = 'auto';
+    };
+
+    const hideOverlay = () => {
+      if (appState.isMinimized) return;
+      this.snowflixUI.style.opacity = '0';
+      this.snowflixUI.style.filter = 'none';
+      this.snowflixUI.style.pointerEvents = 'auto'; // Keep pointer events active so hover can trigger show
+    };
+
+    const resetHideTimer = () => {
+      showOverlay();
+      clearTimeout(hideTimer);
+      hideTimer = setTimeout(hideOverlay, HIDE_DELAY);
+    };
+
+    // Show on mouse enter
+    this.snowflixUI.addEventListener('mouseenter', () => {
+      showOverlay();
+      clearTimeout(hideTimer);
+    });
+
+    // Hide after mouse leave
+    this.snowflixUI.addEventListener('mouseleave', () => {
+      hideTimer = setTimeout(hideOverlay, HIDE_DELAY);
+    });
+
+    // Reset timer on any user interaction
+    this.snowflixUI.addEventListener('click', resetHideTimer);
+    this.snowflixUI.addEventListener('mousemove', resetHideTimer);
+
+    // Start the initial hide timer
+    hideTimer = setTimeout(hideOverlay, HIDE_DELAY);
+
+    // Store for cleanup
+    this.autoHideTimer = hideTimer;
   }
 
 
@@ -903,6 +953,12 @@ class SnowflixPlugin extends Plugin {
     if (this.resizeHandler) {
       window.removeEventListener('resize', this.resizeHandler);
       this.resizeHandler = null;
+    }
+
+    // Clear auto-hide timer
+    if (this.autoHideTimer) {
+      clearTimeout(this.autoHideTimer);
+      this.autoHideTimer = null;
     }
 
     // Remove all event listeners

@@ -26,9 +26,9 @@
 }
 
 .snowflix-ui {
-  -webkit-transition: opacity 0.2s ease-out !important;
-  -moz-transition: opacity 0.2s ease-out !important;
-  transition: opacity 0.2s ease-out !important;
+  -webkit-transition: opacity 0.5s ease-out, filter 0.5s ease-out !important;
+  -moz-transition: opacity 0.5s ease-out, filter 0.5s ease-out !important;
+  transition: opacity 0.5s ease-out, filter 0.5s ease-out !important;
   flex-direction: column !important;
   align-items: center !important;
   position: absolute !important;

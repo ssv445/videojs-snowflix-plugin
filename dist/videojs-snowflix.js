@@ -1931,6 +1931,7 @@ class SnowflixPlugin extends Plugin {
       }, 100);
     }
     this.initResizeHandler();
+    this.initAutoHide();
   }
   initResizeHandler() {
     const handleResize = () => {
@@ -1940,6 +1941,38 @@ class SnowflixPlugin extends Plugin {
     };
     window.addEventListener("resize", handleResize);
     this.resizeHandler = handleResize;
+  }
+  initAutoHide() {
+    const HIDE_DELAY = 3e3;
+    let hideTimer = null;
+    const showOverlay = () => {
+      if (appState.isMinimized) return;
+      this.snowflixUI.style.opacity = "1";
+      this.snowflixUI.style.filter = "none";
+      this.snowflixUI.style.pointerEvents = "auto";
+    };
+    const hideOverlay = () => {
+      if (appState.isMinimized) return;
+      this.snowflixUI.style.opacity = "0";
+      this.snowflixUI.style.filter = "none";
+      this.snowflixUI.style.pointerEvents = "auto";
+    };
+    const resetHideTimer = () => {
+      showOverlay();
+      clearTimeout(hideTimer);
+      hideTimer = setTimeout(hideOverlay, HIDE_DELAY);
+    };
+    this.snowflixUI.addEventListener("mouseenter", () => {
+      showOverlay();
+      clearTimeout(hideTimer);
+    });
+    this.snowflixUI.addEventListener("mouseleave", () => {
+      hideTimer = setTimeout(hideOverlay, HIDE_DELAY);
+    });
+    this.snowflixUI.addEventListener("click", resetHideTimer);
+    this.snowflixUI.addEventListener("mousemove", resetHideTimer);
+    hideTimer = setTimeout(hideOverlay, HIDE_DELAY);
+    this.autoHideTimer = hideTimer;
   }
   addControlBarButton() {
     const Button = videojs.getComponent("Button");
@@ -2359,6 +2392,10 @@ class SnowflixPlugin extends Plugin {
     if (this.resizeHandler) {
       window.removeEventListener("resize", this.resizeHandler);
       this.resizeHandler = null;
+    }
+    if (this.autoHideTimer) {
+      clearTimeout(this.autoHideTimer);
+      this.autoHideTimer = null;
     }
     this.player.off();
     const videoElement = this.player.el().querySelector("video");
